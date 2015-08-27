@@ -62,6 +62,8 @@
       <li>- <a href="#mxLoadMasterRecords">mxLoadMasterRecords</a></li>
       <li>- <a href="#mxLoadOverrideRecords">mxLoadOverrideRecords</a></li>
       <li>- <a href="#mxCopyWinningOverrides">mxCopyWinningOverrides</a></li>
+      <li>- <a href="#mxSkipPatchedRecords">mxSkipPatchedRecords</a></li>
+      <li>- <a href="#mxPatchFile">mxPatchFile</a></li>
     </ul>
 
     <a class="toc_title" href="#general">
@@ -301,6 +303,23 @@
       and should be almost always be set to true.
     </p>
 
+    <p id="mxSkipPatchedRecords">
+      <b class="header">mxSkipPatchedRecords</b> <code>boolean</code>
+      <br />
+      Setting this to true will have <tt>CopyRecordToPatch</tt> and 
+      <tt>CopyRecordsToPatch</tt> skip copying records that are already
+      present in <tt>mxPatchFile</tt>.  This is useful if you want to avoid 
+      performing duplicate work or patching the same value twice.
+    </p>
+    
+    <p id="mxPatchFile">
+      <b class="header">mxPatchFile</b> <code>IInterface</code>
+      <br />
+      Holds the patch file used by MXPF. This is useful to access if you 
+      need to change some attributes of the patch file created by your 
+      script.      
+    </p>
+
 
     <h2 id="general">General</h2>
 
@@ -324,10 +343,10 @@
     <p id="FinalizeMXPF">
       <b class="header">FinalizeMXPF</b> <code>procedure FinalizeMXPF;</code>
       <br />
-      Finalizes MXPF.  You must call this at the end of every 
-      script you've used MXPF in.  Calling this function frees all memory used
-      by MXPF and prints/saves debug and failure messages, depending on user
-      constants.
+      Finalizes MXPF.  You must call this at the end of every script you've 
+      used MXPF in.  Calling this function frees all memory used by MXPF,
+      cleans the masters of <tt>mxPatchFile</tt> if it is assigned, and 
+      prints/saves debug and failure messages, depending on user constants.
     </p>
 <pre>unit userscript;
 
@@ -442,6 +461,12 @@ end;
     <p id="RemoveRecord">
       <b class="header">RemoveRecord</b> <code>procedure RemoveRecord(i: integer);</code>
       <br />
+      Removes the record at the specified index from the <tt>mxRecords</tt> 
+      list.  Use this to apply additional filtering to records you want to 
+      patch after calling <tt>LoadRecords</tt> and before calling 
+      <tt>CopyRecordsToPatch</tt>.  NOTE: You should always loop from the 
+      maximum index <tt>downto</tt> 0 when removing elements from the set 
+      you're looping through.
     </p>
 <pre>LoadRecords('WEAP');
 for i := MaxRecordIndex downto 0 do begin
@@ -456,31 +481,48 @@ end;
     <p id="MaxRecordIndex">
       <b class="header">MaxRecordIndex</b> <code>function MaxRecordIndex: integer;</code>
       <br />
+      Gets the number of items in <tt>mxRecords</tt> minus 1, the maximum 
+      index you can call <tt>GetRecord</tt> with successfully.  This is for
+      use when looping through loaded records.
     </p>
-<pre>LoadRecords('ARMO');
-AddMessage('Found '+IntToStr(MaxRecordIndex + 1)+' ARMO records.');
-</pre>
 
     <h2 id="record_patching">Record Patching</h2>
 
     <p id="CopyRecordToPatch">
       <b class="header">CopyRecordToPatch</b> <code>function CopyRecordToPatch(i: integer): IInterface;</code>
       <br />
+      Copies the record at index <b>i</b> in <tt>mxRecords</tt> to the
+      <tt>mxPatchFile</tt>.  Adds required masters to <tt>mxPatchFile</tt> 
+      if they haven't been added yet.  This provides more control than
+      <tt>CopyRecordsToPatch</tt>.
     </p>
 
     <p id="CopyRecordsToPatch">
       <b class="header">CopyRecordsToPatch</b> <code>procedure CopyRecordsToPatch;</code>
       <br />
+      Copies all loaded records in <tt>mxRecords</tt> to the 
+      <tt>mxPatchFile</tt>.  Adds required masters to <tt>mxPatchFile</tt>
+      if they haven't been added yet.  Records that fail to copy will be
+      logged to <tt>mxFailures</tt>.  Records that are copied successfully
+      will be added to <tt>mxPatchRecords</tt>, and will be accessible 
+      through <tt>GetPatchRecord</tt>.
     </p>
 
     <p id="GetPatchRecord">
       <b class="header">GetPatchRecord</b> <code>function GetPatchRecord(i: integer): IInterface;</code>
       <br />
+      Accesses records that were copied through the 
+      <tt>CopyRecordToPatch</tt> and <tt>CopyRecordsToPatch</tt> functions.
+      Takes an index, <b>i</b>, to determine which record to load.  You should
+      use this function in conjunction with <tt>MaxPatchRecordIndex</tt>.
     </p>
 
     <p id="MaxPatchRecordIndex">
       <b class="header">MaxPatchRecordIndex</b> <code>function MaxPatchRecordIndex: integer;</code>
       <br />
+      Gets the number of items in <tt>mxPatchRecords</tt> minus 1, the 
+      maximum index you can call <tt>GetPatchRecord</tt> with successfully.  
+      This is for use when looping through patch records.
     </p>
 
     <h2 id="reporting">Reporting</h2>

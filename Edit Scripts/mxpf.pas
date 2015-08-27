@@ -49,7 +49,8 @@ var
   mxRecords, mxPatchRecords: TList;
   mxFileMode, mxRecordsCopied, mxRecordsFound: Integer;
   mxInitialized, mxLoadCalled, mxCopyCalled, mxLoadMasterRecords, 
-  mxLoadOverrideRecords, mxCopyWinningOverrides, mxMastersAdded: boolean;
+  mxLoadOverrideRecords, mxCopyWinningOverrides, mxMastersAdded,
+  mxSkipPatchedRecords: boolean;
   mxPatchFile: IInterface;
 
 //=========================================================================
@@ -637,6 +638,11 @@ begin
   // if all checks pass, try copying record
   rec := ObjectToElement(mxRecords[i]);
   if mxCopyWinningOverrides then rec := WinningOverride(rec);
+  // record already in patch
+  if Equals(GetFile(rec), mxPatchFile) and mxSkipPatchedRecords then begin
+    DebugMessage('Skipping record %s, already in patch!', [Name(rec)]);
+    exit;
+  end;
   try
     Result := wbCopyElementToFile(rec, mxPatchFile, false, true);
     mxPatchRecords.Add(TObject(Result));
@@ -680,6 +686,11 @@ begin
   for i := 0 to Pred(mxRecords.Count) do begin
     rec := ObjectToElement(mxRecords[i]);
     if mxCopyWinningOverrides then rec := WinningOverride(rec);
+    // record already in patch
+    if Equals(GetFile(rec), mxPatchFile) and mxSkipPatchedRecords then begin
+      DebugMessage('Skipping record %s, already in patch!', [Name(rec)]);
+      continue;
+    end;
     
     // try copying the record
     try
