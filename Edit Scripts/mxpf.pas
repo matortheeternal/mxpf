@@ -11,6 +11,27 @@ unit mxpf;
 uses mteFunctions;
 
 const
+  { USER CONSTANTS - FEEL FREE TO CHANGE }
+  // debug constants
+  mxDebug = true;
+  mxDebugVerbose = false;
+  
+  // logging constants
+  mxSaveDebug = true;
+  mxSaveFailures = true;
+  mxPrintDebug = false;
+  mxPrintFailures = true;
+  mxEchoDebug = false;
+  mxEchoFailures = false;
+  
+  { DEVELOPER CONSTANTS - DON'T CHANGE }
+  // version constant
+  version = '1.0.0';
+  
+  // mode constants
+  mxExclusionMode = 1;
+  mxInclusionMode = 2;
+  
   // comma separated list of bethesda files
   mxBethesdaFiles = 'Skyrim.esm'#44'Update.esm'#44'Dawnguard.esm'#44'HearthFires.esm'#44
   'Dragonborn.esm'#44'Fallout3.esm'#44'FalloutNV.esm'#44'Oblivion.esm'#44
@@ -19,25 +40,12 @@ const
   'Oblivion.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat'#44
   'FalloutNV.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat';
   
-const
-  // debug mode, feel free to change when debugging
-  mxDebug = true;
-  mxDebugVerbose = false;
-  
-  // logging constants, feel free to change
-  mxSaveDebug = true;
-  mxSaveFailures = true;
-  mxPrintDebug = false;
-  mxPrintFailures = true;
-  mxEchoDebug = false;
-  mxEchoFailures = false;
-  
-  // mode constants, don't change
-  mxExclusionMode = 1;
-  mxInclusionMode = 2;
-  
-  // version constant, don't change
-  version = '1.0.0';
+  // comma separated list of hardcoded dat files
+  mxHardcodedDatFiles = 
+  'Skyrim.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat'#44
+  'Fallout3.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat'#44
+  'Oblivion.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat'#44
+  'FalloutNV.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat';
 
 var
   mxFiles, mxMasters, mxDebugMessages, mxFailureMessages: TStringList;

@@ -64,12 +64,20 @@
       <li>- <a href="#FinalizeMXPF">FinalizeMXPF</a></li>
     </ul>
 
-    <a class="toc_title" href="#file_selection">
+    <a class="toc_title" href="#patch_file_selection">
       Patch File Selection
     </a>
     <ul class="toc_section">
       <li>- <a href="#PatchFileByAuthor">PatchFileByAuthor</a></li>
       <li>- <a href="#PatchFileByName">PatchFileByName</a></li>
+    </ul>
+
+    <a class="toc_title" href="#file_selection">
+      File Selection
+    </a>
+    <ul class="toc_section">
+      <li>- <a href="#SetExclusions">SetExclusions</a></li>
+      <li>- <a href="#SetInclusions">SetInclusions</a></li>
     </ul>
 
     <a class="toc_title" href="#record_processing">
@@ -86,7 +94,6 @@
       Record Patching
     </a>
     <ul class="toc_section">
-      <li>- <a href="#AddMastersToPatch">AddMastersToPatch</a></li>
       <li>- <a href="#CopyRecordToPatch">CopyRecordToPatch</a></li>
       <li>- <a href="#CopyRecordsToPatch">CopyRecordsToPatch</a></li>
       <li>- <a href="#GetPatchRecord">GetPatchRecord</a></li>
@@ -157,7 +164,7 @@
     <h2 id="download_setup">Download and Setup</h2>
 
   
-    <h2 id="constants">User Constants</h2>
+    <h2 id="constants">Constants</h2>
     <p id="mxDebug">
       <b class="header">mxDebug</b> <code>boolean</code>
       <br />
@@ -169,24 +176,24 @@
     <p id="mxDebugVerbose">
       <b class="header">mxDebugVerbose</b> <code>boolean</code>
       <br />
-      If set to true MXPF will generate verbose debug messages throughout
-      program execution.  These are messages associated with every record
-      processed by MXPF.  Tracking these messages will slow down MXPF execution
-      and may make debug logs extremely large.
+      If set to true MXPF will generate verbose debug messages.  These are 
+      messages associated with every record processed by MXPF.  Tracking 
+      these messages will slow down MXPF execution and may make debug logs 
+      extremely large.
     </p>
 
     <p id="mxSaveDebug">
       <b class="header">mxSaveDebug</b> <code>boolean</code>
       <br />
       If set to true and <tt>mxDebug</tt> is enabled, debug messages will be 
-      saved to a text document in <tt>mxpf/logs/*</tt>.
+      saved to a text document in <tt>mxpf/logs/mxpf-debug-{{time}}.txt</tt>.
     </p>
 
     <p id="mxSaveFailures">
       <b class="header">mxSaveFailures</b> <code>boolean</code>
       <br />
-      If set to true and record copying failures occur during MXPF execution, 
-      failure messages will be saved to a text document in <tt>mxpf/logs/*</tt>.
+      If set to true, failure messages will be saved to a text document in 
+      <tt>mxpf/logs/mxpf-failures-{{time}}.txt</tt>.
     </p>
 
     <p id="mxPrintDebug">
@@ -199,9 +206,8 @@
     <p id="mxPrintFailures">
       <b class="header">mxPrintFailures</b> <code>boolean</code>
       <br />
-      If set to true and record copying failures occur during MXPF execution, 
-      failure messages will be printed to xEdit's message log when <tt>FinalizeMXPF</tt>
-      is called.
+      If set to true, failure messages will be printed to xEdit's message log 
+      when <tt>FinalizeMXPF</tt> is called.
     </p>
 
     <p id="mxEchoDebug">
@@ -215,9 +221,8 @@
     <p id="mxEchoFailures">
       <b class="header">mxEchoFailures</b> <code>boolean</code>
       <br />
-      If set to true and record copying failures occur during MXPF execution, 
-      failure messages will be printed to xEdit's message log during execution.
-      Echoing messages slows down script execution.
+      If set to true, failure messages will be printed to xEdit's message log 
+      during execution.  Echoing messages slows down script execution.
     </p>
 
 
@@ -261,36 +266,46 @@
     <p id="DefaultOptionsMXPF">
       <b class="header">DefaultOptionsMXPF</b> <code>procedure DefaultOptionsMXPF;</code>
       <br />
-      This method will set default options in MXPF.  Usually you should just
-      call this to get the default behavior of MXPF, which is what most use
-      cases require.  This method sets <tt>mxLoadMasterRecords</tt> and
-      <tt>mxCopyWinningOverrides</tt> to true.  You can call this method before
-      calling <tt>InitializeMXPF</tt>.
+      Sets default options in MXPF.  Usually you should call this whenever you
+      use MXPF, as it sets the options which is what most use cases require.  
+      This method sets <tt>mxLoadMasterRecords</tt> and <tt>mxCopyWinningOverrides</tt> 
+      to true.  You can call this method before calling <tt>InitializeMXPF</tt>.
     </p>
 
     <p id="InitializeMXPF">
       <b class="header">InitializeMXPF</b> <code>procedure InitializeMXPF;</code>
       <br />
-      This method initializes MXPF.  You must call this at the beginning of
-      every script before attempting to access any other MXPF function (except
+      Initializes MXPF.  You must call this at the beginning of every script 
+      before attempting to access any other MXPF function (except
       <tt>DefaultOptionsMXPF</tt>).
     </p>
 
     <p id="FinalizeMXPF">
       <b class="header">FinalizeMXPF</b> <code>procedure FinalizeMXPF;</code>
       <br />
-      This method finalizes MXPF.  You must call this at the end of every 
+      Finalizes MXPF.  You must call this at the end of every 
       script you've used MXPF in.  Calling this function frees all memory used
       by MXPF and prints/saves debug and failure messages, depending on user
       constants.
     </p>
+<pre>unit userscript;
 
-    <h2 id="file_selection">Patch File Selection</h2>
+uses mxpf;
+
+function Initialize: integer;
+begin
+  InitializeMXPF;
+  DefaultOptionsMXPF;
+  { Everything you want to do with MXPF goes here. }
+  FinalizeMXPF;
+end;</pre>
+
+    <h2 id="patch_file_selection">Patch File Selection</h2>
 
     <p id="PatchFileByAuthor">
       <b class="header">PatchFileByAuthor</b> <code>procedure PatchFileByAuthor(author: string);</code>
       <br />
-      This method selects the MXPF patch file by an <b>author</b>.  If no file is 
+      Selects the MXPF patch file by an <b>author</b>.  If no file is 
       found in the user's load order matching the specified author, the method 
       will prompt the user to create one, and set the new file's author to the 
       specified author string.<br />
@@ -307,49 +322,113 @@
       author, this method will select the one closest to the top of the user's 
       load order.
     </p>
+<pre>PatchFileByAuthor('MXPF ARMO Example');
+SetExclusions(mxHardcodedDatFiles);
+LoadRecords('ARMO');
+CopyRecordsToPatch;
+</pre>
 
     <p id="PatchFileByName">
       <b class="header">PatchFileByName</b> <code>procedure PatchFileByName(filename: string);</code>
       <br />
-      This method selects the MXPF patch file by a <b>filename</b>.  If no file is 
-      found in the user's load order matching the specified filename, the 
-      method will prompt the user to create one.  If the created file does not 
-      match the desired filename, the script will inform the user that it will 
-      not recognize that file as the patch file in the future.<br />
+      Selects the MXPF patch file by a <b>filename</b>.  If no file is found 
+      in the user's load order matching the specified filename, the method will 
+      prompt the user to create one.  If the created file does not match the 
+      desired filename, the script will inform the user that it will not 
+      recognize that file as the patch file in the future.<br />
       Once selected, the patch file is stored in the <tt>mxPatchFile</tt> variable, 
       and is used by MXPF Record Patching methods.  Using filename based file
       selection is fairly standard, but selecting by author is better because
       it is more flexible.
     </p>
+<pre>PatchFileByName('MXPF ARMO Example.esp');
+SetExclusions(mxHardcodedDatFiles);
+LoadRecords('ARMO');
+CopyRecordsToPatch;
+</pre>
+
+    <h2 id="file_selection">File Selection</h2>
+
+    <p id="SetExclusions">
+      <b class="header">SetExclusions</b> <code>procedure SetExclusions(s: string);</code>
+      <br />
+      Sets the file selection mode to exclusion and loads the comma-separated 
+      list of files, <b>s</b>, into the mxFiles stringlist.  Affects which
+      files <tt>LoadRecords</tt> will load records from.
+    </p>
+<pre>PatchFileByAuthor('MXPF ARMO Example');
+SetExclusions(mxHardcodedDatFiles);
+// now we won't load records from any of the hardcoded dat files
+LoadRecords('ARMO');
+CopyRecordsToPatch;
+</pre>
+
+    <p id="SetInclusions">
+      <b class="header">SetInclusions</b> <code>procedure SetInclusions(s: string);</code>
+      <br />
+      Sets the file selection mode to inclusion and loads the comma-separated 
+      list of files, <b>s</b>, into the mxFiles stringlist.  Affects which
+      files <tt>LoadRecords</tt> will load records from.
+    </p>
+<pre>PatchFileByAuthor('MXPF ARMO Example');
+SetInclusions('Skyrim.esm');
+// now we will only load records from Skyrim.esm
+LoadRecords('ARMO');
+CopyRecordsToPatch;
+</pre>
 
     <h2 id="record_processing">Record Processing</h2>
 
     <p id="LoadRecords">
       <b class="header">LoadRecords</b> <code>procedure LoadRecords(sig: string);</code>
       <br />
+      Loads records from the file selection specified with <tt>SetInclusions</tt> or
+      <tt>SetExclusions</tt>.  All records matching the input signature, <b>sig</b>
+      will be added to the <tt>mxRecords</tt> list.  Note: Calling this function
+      does not clear the <tt>mxRecords</tt> list.
     </p>
+<pre>SetExclusions(mxHardcodedDatFiles);
+LoadRecords('WOOP'); // loads all WOOP (word of power) records
+LoadRecords('OTFT'); // loads all OTFT (outfit) records  
+</pre>
 
     <p id="GetRecord">
       <b class="header">GetRecord</b> <code>function GetRecord(i: integer): IInterface;</code>
       <br />
+      Accesses records that were loaded through the <tt>LoadRecords</tt> function.
+      Takes an index, <b>i</b>, to determine which record to load.  You should
+      use this function in conjunction with <tt>MaxRecordIndex</tt>.
     </p>
+<pre>LoadRecords('STAT');
+for i := 0 to MaxRecordIndex do begin
+  rec := GetRecord(i);
+  AddMessage('Found '+Name(rec));
+end;
+</pre>
 
     <p id="RemoveRecord">
       <b class="header">RemoveRecord</b> <code>procedure RemoveRecord(i: integer);</code>
       <br />
     </p>
+<pre>LoadRecords('WEAP');
+for i := MaxRecordIndex downto 0 do begin
+  rec := GetRecord(i);
+  damage := StrToInt(GetElementEditValues(rec, 'DATA\Damage'));
+  // remove the weapon if its damage is less than 20 
+  if damage < 20 then
+    RemoveRecord(i);
+end;
+</pre>
 
     <p id="MaxRecordIndex">
       <b class="header">MaxRecordIndex</b> <code>function MaxRecordIndex: integer;</code>
       <br />
     </p>
+<pre>LoadRecords('ARMO');
+AddMessage('Found '+IntToStr(MaxRecordIndex + 1)+' ARMO records.');
+</pre>
 
     <h2 id="record_patching">Record Patching</h2>
-
-    <p id="AddMastersToPatch">
-      <b class="header">AddMastersToPatch</b> <code>procedure AddMastersToPatch;</code>
-      <br />
-    </p>
 
     <p id="CopyRecordToPatch">
       <b class="header">CopyRecordToPatch</b> <code>function CopyRecordToPatch(i: integer): IInterface;</code>
