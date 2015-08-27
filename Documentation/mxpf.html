@@ -32,7 +32,7 @@
       Download and Setup
     </a>
 
-    <a class="toc_title" href="#constants">
+    <a class="toc_title" href="#user_constants">
       User Constants
     </a>
     <ul class="toc_section">
@@ -46,8 +46,17 @@
       <li>- <a href="#mxEchoFailures">mxEchoFailures</a></li>
     </ul>
 
+    <a class="toc_title" href="#dev_constants">
+      Developer Constants
+    </a>
+    <ul class="toc_section">
+      <li>- <a href="#mxVersion">mxVersion</a></li>
+      <li>- <a href="#mxBethesdaSkyrimFiles">mxBethesdaSkyrimFiles</a></li>
+      <li>- <a href="#mxHardcodedDatFiles">mxHardcodedDatFiles</a></li>
+    </ul>
+
     <a class="toc_title" href="#variables">
-      Public Variables
+      Variables
     </a>
     <ul class="toc_section">
       <li>- <a href="#mxLoadMasterRecords">mxLoadMasterRecords</a></li>
@@ -164,7 +173,10 @@
     <h2 id="download_setup">Download and Setup</h2>
 
   
-    <h2 id="constants">Constants</h2>
+    <h2 id="user_constants">User Constants</h2>
+    User constants are constants that are meant to be set by the user.
+    They will vary from machine to machine.
+    
     <p id="mxDebug">
       <b class="header">mxDebug</b> <code>boolean</code>
       <br />
@@ -224,10 +236,39 @@
       If set to true, failure messages will be printed to xEdit's message log 
       during execution.  Echoing messages slows down script execution.
     </p>
+    
+  
+    <h2 id="dev_constants">Developer Constants</h2>
+    Developer constants are constants that shouldn't be changed.  These constants
+    will be the same on every machine per version of MXPF, and can be useful
+    in scripts that use MXPF.
+
+    <p id="mxVersion">
+      <b class="header">mxVersion</b> <code>string</code>
+      <br />
+      This is a string representing the version of the MXPF file being used.
+      You can check this to make sure that MXPF is of an adequate version for
+      your script.
+    </p>
+
+    <p id="mxBethesdaSkyrimFiles">
+      <b class="header">mxBethesdaSkyrimFiles</b> <code>string</code>
+      <br />
+      This is a string containing a comma-separated list of the filenames of 
+      all Bethesda master files associated with Skyrim.
+    </p>
+
+    <p id="mxHardcodedDatFiles">
+      <b class="header">mxHardcodedDatFiles</b> <code>string</code>
+      <br />
+      This is a string containing a comma-separated list of the filenames of 
+      all hardcoded dat files that xEdit uses to emulate game executables.
+      These files appears as Skyrim.exe, Fallout3.exe, Oblivion.exe, and 
+      FalloutNV.exe in xEdit.
+    </p>
 
 
-
-    <h2 id="variables">Public Variables</h2>
+    <h2 id="variables">Variables</h2>
 
     <p id="mxLoadMasterRecords">
       <b class="header">mxLoadMasterRecords</b> <code>boolean</code>

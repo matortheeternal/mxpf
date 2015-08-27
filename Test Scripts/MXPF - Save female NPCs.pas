@@ -5,7 +5,7 @@ uses mteFunctions, mxpf;
 function Initialize: Integer;
 var
   i: integer;
-  sl: TStringList;
+  sl, files: TStringList;
 begin
   // initialize stringlists
   sl := TStringList.Create;
@@ -13,8 +13,8 @@ begin
   
   // get user file selection
   MultiFileSelect(files);
-  DefaultOptionsMXPF;
   InitializeMXPF;
+  DefaultOptionsMXPF;
   SetInclusions(files.CommaText);
   LoadRecords('NPC_');
   for i := 0 to MaxRecordIndex do begin
@@ -22,9 +22,9 @@ begin
     if geev(rec, 'ACBS/Flags/Female') = '1' then
       sl.Add(Name(rec));
   end;
-  FinalizeMXPF;
   
   // clean up
+  FinalizeMXPF;
   sl.SaveToFile('Female NPCs.txt');
   files.Free;
   sl.Free;

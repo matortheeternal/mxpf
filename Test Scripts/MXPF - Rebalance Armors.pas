@@ -18,7 +18,7 @@ begin
   
   // select/create a new patch file that will be identified by its author field
   PatchFileByAuthor('TestMXPF');
-  SetExclusions(mxBethesdaFiles); // excludes bethesda files from record loading
+  SetExclusions(mxBethesdaSkyrimFiles); // excludes bethesda files from record loading
   LoadRecords('ARMO'); // loads all Armor records
   
   // you can filter the loaded records like this

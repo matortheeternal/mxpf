@@ -26,19 +26,16 @@ const
   
   { DEVELOPER CONSTANTS - DON'T CHANGE }
   // version constant
-  version = '1.0.0';
+  mxVersion = '1.0.0';
   
   // mode constants
   mxExclusionMode = 1;
   mxInclusionMode = 2;
   
-  // comma separated list of bethesda files
-  mxBethesdaFiles = 'Skyrim.esm'#44'Update.esm'#44'Dawnguard.esm'#44'HearthFires.esm'#44
-  'Dragonborn.esm'#44'Fallout3.esm'#44'FalloutNV.esm'#44'Oblivion.esm'#44
-  'Skyrim.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat'#44
-  'Fallout3.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat'#44
-  'Oblivion.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat'#44
-  'FalloutNV.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat';
+  // comma separated list of bethesda skyrim files
+  mxBethesdaSkyrimFiles = 'Skyrim.esm'#44'Update.esm'#44'Dawnguard.esm'#44'HearthFires.esm'#44
+  'Dragonborn.esm'#44
+  'Skyrim.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat';
   
   // comma separated list of hardcoded dat files
   mxHardcodedDatFiles = 
