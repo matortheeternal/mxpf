@@ -1,0 +1,381 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="target-densitydpi=device-dpi" />
+  <meta name="HandheldFriendly" content="true"/>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <title>Mator's xEdit Patching Framework</title>
+  <link type="text/css" rel="stylesheet" href="assets/main.css" />
+</head>
+
+<body>
+  <div id="sidebar" class="interface">
+    <a class="toc_title" href="#">
+      MXPF <span class="version">(1.0.0)</span>
+    </a>
+    <ul class="toc_section">
+      <li>&raquo; <a href="https://github.com/matortheeternal/mxpf">GitHub Repository</a></li>
+    </ul>
+
+    <a class="toc_title" href="#">
+      Introduction
+    </a>
+
+    <a class="toc_title" href="#dependencies">
+      Dependencies
+    </a>
+
+    <a class="toc_title" href="#download_setup">
+      Download and Setup
+    </a>
+
+    <a class="toc_title" href="#constants">
+      User Constants
+    </a>
+    <ul class="toc_section">
+      <li>- <a href="#mxDebug">mxDebug</a></li>
+      <li>- <a href="#mxDebugVerbose">mxDebugVerbose</a></li>
+      <li>- <a href="#mxSaveDebug">mxSaveDebug</a></li>
+      <li>- <a href="#mxSaveFailures">mxSaveFailures</a></li>
+      <li>- <a href="#mxPrintDebug">mxPrintDebug</a></li>
+      <li>- <a href="#mxPrintFailures">mxPrintFailures</a></li>
+      <li>- <a href="#mxEchoDebug">mxEchoDebug</a></li>
+      <li>- <a href="#mxEchoFailures">mxEchoFailures</a></li>
+    </ul>
+
+    <a class="toc_title" href="#variables">
+      Public Variables
+    </a>
+    <ul class="toc_section">
+      <li>- <a href="#mxLoadMasterRecords">mxLoadMasterRecords</a></li>
+      <li>- <a href="#mxLoadOverrideRecords">mxLoadOverrideRecords</a></li>
+      <li>- <a href="#mxCopyWinningOverrides">mxCopyWinningOverrides</a></li>
+    </ul>
+
+    <a class="toc_title" href="#general">
+      General
+    </a>
+    <ul class="toc_section">
+      <li>- <a href="#DefaultOptionsMXPF">DefaultOptionsMXPF</a></li>
+      <li>- <a href="#InitializeMXPF">InitializeMXPF</a></li>
+      <li>- <a href="#FinalizeMXPF">FinalizeMXPF</a></li>
+    </ul>
+
+    <a class="toc_title" href="#file_selection">
+      Patch File Selection
+    </a>
+    <ul class="toc_section">
+      <li>- <a href="#PatchFileByAuthor">PatchFileByAuthor</a></li>
+      <li>- <a href="#PatchFileByName">PatchFileByName</a></li>
+    </ul>
+
+    <a class="toc_title" href="#record_processing">
+      Record Processing
+    </a>
+    <ul class="toc_section">
+      <li>- <a href="#LoadRecords">LoadRecords</a></li>
+      <li>- <a href="#GetRecord">GetRecord</a></li>
+      <li>- <a href="#RemoveRecord">RemoveRecord</a></li>
+      <li>- <a href="#MaxRecordIndex">MaxRecordIndex</a></li>
+    </ul>
+
+    <a class="toc_title" href="#record_patching">
+      Record Patching
+    </a>
+    <ul class="toc_section">
+      <li>- <a href="#AddMastersToPatch">AddMastersToPatch</a></li>
+      <li>- <a href="#CopyRecordToPatch">CopyRecordToPatch</a></li>
+      <li>- <a href="#CopyRecordsToPatch">CopyRecordsToPatch</a></li>
+      <li>- <a href="#GetPatchRecord">GetPatchRecord</a></li>
+      <li>- <a href="#MaxPatchRecordIndex">MaxPatchRecordIndex</a></li>
+    </ul>
+
+    <a class="toc_title" href="#reporting">
+      Reporting
+    </a>
+    <ul class="toc_section">
+      <li>- <a href="#PrintMXPFReport">PrintMXPFReport</a></li>
+    </ul>
+
+    <a class="toc_title" href="#links">
+      Links
+    </a>
+    <a class="toc_title" href="#changelog">
+      Changelog
+    </a>
+    </br>
+  </div>
+
+  <div class="container">
+    <p><img src="assets/banner.png" width="550"/></p>
+
+    <p><a href="http://github.com/matortheeternal/mxpf">MXPF</a> is an xEdit scripting library that provides a variety of functions
+    for the generation of patches.  Want to rebalance armor and weapons in 
+    Skyrim?  Done.  Apply a new particle effect to every weather?  Easy.  
+    Change the configuration of all NPCs?  Cake.
+    </p>
+
+    <p>MXPF is comprised a suite of functions that do the work of finding the 
+    records you want to patch, identifying/creating a patch file, and 
+    copying records to the patch.  Where you would normally have to learn 
+    to do all of these steps yourself, with MXPF you can accomplish 
+    everything you need with a few simple functions.</p>
+
+    <p>The project is available on GitHub and Nexus Mods.  Annotated source 
+    code and a test suite are both currently being developed.  There are 
+    also a bunch of example scripts available which show you how you can 
+    use MXPF and xEdit Scripting to solve problems.</p>
+
+    <p>You can report bugs and discuss features on the GitHub issues page.  
+    You can also talk with developers and other users on the <a href="https://www.hipchat.com/ggzoQiNoI">xEdit HipChat</a>, 
+    in the <a href="http://www.nexusmods.com/skyrim/mods/68617/?tab=4&&navtag=http%3A%2F%2Fwww.nexusmods.com%2Fskyrim%2Fajax%2Fcomments%2F%3Fmod_id%3D68617%26page%3D1%26sort%3DDESC%26pid%3D0%26thread_id%3D3119670&pUp=1">NexusMods comments section</a>, and on <a href="http://reddit.com/r/xEdit">r/xEdit</a>.</p>
+
+    <h2 id="dependencies">Dependencies</h2>
+    <ul>
+      <li>
+        <b>mteFunctions:</b> 
+        Comes packaged with mxpf.  Updates available on 
+        <a href="https://github.com/matortheeternal/TES5EditScripts/blob/master/trunk/Edit%20Scripts/mteFunctions.pas">GitHub</a>.
+      </li>
+      <li>
+        <b>xEdit:</b>
+        Download from <a href="http://www.nexusmods.com/skyrim/mods/25859">Nexus Mods</a>, 
+        or <a href="https://github.com/TES5Edit/TES5Edit/releases">GitHub</a>.
+      </li>
+      <li>
+        <b>Bethesda game:</b> 
+        xEdit supports <a href="http://store.steampowered.com/app/72850/">Skyrim</a>, 
+        <a href="http://store.steampowered.com/app/22330/">Oblivion</a>, 
+        <a href="http://store.steampowered.com/app/22300/">Fallout 3</a>, 
+        and <a href="http://store.steampowered.com/app/22380/">Fallout New Vegas</a>. 
+    </ul>
+    
+    <h2 id="download_setup">Download and Setup</h2>
+
+  
+    <h2 id="constants">User Constants</h2>
+    <p id="mxDebug">
+      <b class="header">mxDebug</b> <code>boolean</code>
+      <br />
+      If set to true MXPF will generate debug messages throughout program
+      execution.  Use <tt>mxSaveDebug</tt>, <tt>mxPrintDebug</tt> or 
+      <tt>mxEchoDebug</tt> to control where debug information is sent.
+    </p>
+
+    <p id="mxDebugVerbose">
+      <b class="header">mxDebugVerbose</b> <code>boolean</code>
+      <br />
+      If set to true MXPF will generate verbose debug messages throughout
+      program execution.  These are messages associated with every record
+      processed by MXPF.  Tracking these messages will slow down MXPF execution
+      and may make debug logs extremely large.
+    </p>
+
+    <p id="mxSaveDebug">
+      <b class="header">mxSaveDebug</b> <code>boolean</code>
+      <br />
+      If set to true and <tt>mxDebug</tt> is enabled, debug messages will be 
+      saved to a text document in <tt>mxpf/logs/*</tt>.
+    </p>
+
+    <p id="mxSaveFailures">
+      <b class="header">mxSaveFailures</b> <code>boolean</code>
+      <br />
+      If set to true and record copying failures occur during MXPF execution, 
+      failure messages will be saved to a text document in <tt>mxpf/logs/*</tt>.
+    </p>
+
+    <p id="mxPrintDebug">
+      <b class="header">mxPrintDebug</b> <code>boolean</code>
+      <br />
+      If set to true and <tt>mxDebug</tt> is enabled, debug messages will be 
+      printed to xEdit's message log when <tt>FinalizeMXPF</tt> is called.
+    </p>
+
+    <p id="mxPrintFailures">
+      <b class="header">mxPrintFailures</b> <code>boolean</code>
+      <br />
+      If set to true and record copying failures occur during MXPF execution, 
+      failure messages will be printed to xEdit's message log when <tt>FinalizeMXPF</tt>
+      is called.
+    </p>
+
+    <p id="mxEchoDebug">
+      <b class="header">mxEchoDebug</b> <code>boolean</code>
+      <br />
+      If set to true and <tt>mxDebug</tt> is enabled, debug messages will be 
+      printed to xEdit's message log during execution.  Echoing messages slows
+      down script execution.
+    </p>
+
+    <p id="mxEchoFailures">
+      <b class="header">mxEchoFailures</b> <code>boolean</code>
+      <br />
+      If set to true and record copying failures occur during MXPF execution, 
+      failure messages will be printed to xEdit's message log during execution.
+      Echoing messages slows down script execution.
+    </p>
+
+
+
+    <h2 id="variables">Public Variables</h2>
+
+    <p id="mxLoadMasterRecords">
+      <b class="header">mxLoadMasterRecords</b> <code>boolean</code>
+      <br />
+      Setting this to true will alter how <tt>LoadRecords</tt> behaves.  When true,
+      <tt>LoadRecords</tt> will only load records that are masters (i.e. new records
+      in the file they're being processed in, not overrides).  This allows you
+      to avoid patching records that override records from files you've excluded
+      or not included.
+    </p>
+
+    <p id="mxLoadOverrideRecords">
+      <b class="header">mxLoadOverrideRecords</b> <code>boolean</code>
+      <br />
+      Setting this to true will alter how <tt>LoadRecords</tt> behaves.  When true,
+      <tt>LoadRecords</tt> will only load records that are override records (i.e.
+      not new records).  This is the opposite of <tt>mxLoadMasterRecords</tt>, and
+      is useful if you want to only target override records in a few specific
+      files.
+    </p>
+
+    <p id="mxCopyWinningOverrides">
+      <b class="header">mxCopyWinningOverrides</b> <code>boolean</code>
+      <br />
+      Setting this to true will alter how <tt>CopyRecordsToPatch</tt> behaves.  
+      When true, <tt>CopyRecordsToPatch</tt> will copy the winning override of the
+      targetted record to the patch file, which makes certain you don't
+      overwrite the changes made to the record that would be present in game
+      without the patch file you're generating.  This is extremely important,
+      and should be almost always be set to true.
+    </p>
+
+
+    <h2 id="general">General</h2>
+
+    <p id="DefaultOptionsMXPF">
+      <b class="header">DefaultOptionsMXPF</b> <code>procedure DefaultOptionsMXPF;</code>
+      <br />
+      This method will set default options in MXPF.  Usually you should just
+      call this to get the default behavior of MXPF, which is what most use
+      cases require.  This method sets <tt>mxLoadMasterRecords</tt> and
+      <tt>mxCopyWinningOverrides</tt> to true.  You can call this method before
+      calling <tt>InitializeMXPF</tt>.
+    </p>
+
+    <p id="InitializeMXPF">
+      <b class="header">InitializeMXPF</b> <code>procedure InitializeMXPF;</code>
+      <br />
+      This method initializes MXPF.  You must call this at the beginning of
+      every script before attempting to access any other MXPF function (except
+      <tt>DefaultOptionsMXPF</tt>).
+    </p>
+
+    <p id="FinalizeMXPF">
+      <b class="header">FinalizeMXPF</b> <code>procedure FinalizeMXPF;</code>
+      <br />
+      This method finalizes MXPF.  You must call this at the end of every 
+      script you've used MXPF in.  Calling this function frees all memory used
+      by MXPF and prints/saves debug and failure messages, depending on user
+      constants.
+    </p>
+
+    <h2 id="file_selection">Patch File Selection</h2>
+
+    <p id="PatchFileByAuthor">
+      <b class="header">PatchFileByAuthor</b> <code>procedure PatchFileByAuthor(author: string);</code>
+      <br />
+      This method selects the MXPF patch file by an <b>author</b>.  If no file is 
+      found in the user's load order matching the specified author, the method 
+      will prompt the user to create one, and set the new file's author to the 
+      specified author string.<br />
+      
+      Once selected, the patch file is stored in the <tt>mxPatchFile</tt> variable, 
+      and is used by MXPF Record Patching methods.  Using author based file 
+      selection is preferable over filename selection because xEdit does not 
+      currently support a means of creating a file with a specified name (the 
+      user has to enter the name manually).  Author selection also allows the 
+      user to have multiple instances of the patch file in their load order 
+      without having to manually rename them to avoid conflicts.<br />
+      
+      NOTE: If there are multiple files with authors matching the specified 
+      author, this method will select the one closest to the top of the user's 
+      load order.
+    </p>
+
+    <p id="PatchFileByName">
+      <b class="header">PatchFileByName</b> <code>procedure PatchFileByName(filename: string);</code>
+      <br />
+      This method selects the MXPF patch file by a <b>filename</b>.  If no file is 
+      found in the user's load order matching the specified filename, the 
+      method will prompt the user to create one.  If the created file does not 
+      match the desired filename, the script will inform the user that it will 
+      not recognize that file as the patch file in the future.<br />
+      Once selected, the patch file is stored in the <tt>mxPatchFile</tt> variable, 
+      and is used by MXPF Record Patching methods.  Using filename based file
+      selection is fairly standard, but selecting by author is better because
+      it is more flexible.
+    </p>
+
+    <h2 id="record_processing">Record Processing</h2>
+
+    <p id="LoadRecords">
+      <b class="header">LoadRecords</b> <code>procedure LoadRecords(sig: string);</code>
+      <br />
+    </p>
+
+    <p id="GetRecord">
+      <b class="header">GetRecord</b> <code>function GetRecord(i: integer): IInterface;</code>
+      <br />
+    </p>
+
+    <p id="RemoveRecord">
+      <b class="header">RemoveRecord</b> <code>procedure RemoveRecord(i: integer);</code>
+      <br />
+    </p>
+
+    <p id="MaxRecordIndex">
+      <b class="header">MaxRecordIndex</b> <code>function MaxRecordIndex: integer;</code>
+      <br />
+    </p>
+
+    <h2 id="record_patching">Record Patching</h2>
+
+    <p id="AddMastersToPatch">
+      <b class="header">AddMastersToPatch</b> <code>procedure AddMastersToPatch;</code>
+      <br />
+    </p>
+
+    <p id="CopyRecordToPatch">
+      <b class="header">CopyRecordToPatch</b> <code>function CopyRecordToPatch(i: integer): IInterface;</code>
+      <br />
+    </p>
+
+    <p id="CopyRecordsToPatch">
+      <b class="header">CopyRecordsToPatch</b> <code>procedure CopyRecordsToPatch;</code>
+      <br />
+    </p>
+
+    <p id="GetPatchRecord">
+      <b class="header">GetPatchRecord</b> <code>function GetPatchRecord(i: integer): IInterface;</code>
+      <br />
+    </p>
+
+    <p id="MaxPatchRecordIndex">
+      <b class="header">MaxPatchRecordIndex</b> <code>function MaxPatchRecordIndex: integer;</code>
+      <br />
+    </p>
+
+    <h2 id="reporting">Reporting</h2>
+
+    <p id="PrintMXPFReport">
+      <b class="header">PrintMXPFReport</b> <code>procedure PrintMXPFReport;</code>
+      <br />
+    </p>
+  </div>
+</body>
+</html>
