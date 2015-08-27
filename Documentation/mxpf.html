@@ -496,6 +496,15 @@ end;
       if they haven't been added yet.  This provides more control than
       <tt>CopyRecordsToPatch</tt>.
     </p>
+<pre>LoadRecords('NPC_');
+for i := 0 to MaxRecordIndex do begin
+  rec := GetRecord(i);
+  // instead of using RemoveRecord, we can just copy specific
+  // records with CopyRecordToPatch
+  if GetElementEditValues(rec, 'ACBS\Flags\Female') = '1' then
+    CopyRecordToPatch(i);
+end;
+</pre>
 
     <p id="CopyRecordsToPatch">
       <b class="header">CopyRecordsToPatch</b> <code>procedure CopyRecordsToPatch;</code>
@@ -516,6 +525,13 @@ end;
       Takes an index, <b>i</b>, to determine which record to load.  You should
       use this function in conjunction with <tt>MaxPatchRecordIndex</tt>.
     </p>
+<pre>LoadRecords('LSCR');
+CopyRecordsToPatch;
+for i := 0 to MaxPatchRecordIndex do begin
+  rec := GetPatchRecord(i);
+  AddMessage('Patched '+Name(rec));
+end;
+</pre>
 
     <p id="MaxPatchRecordIndex">
       <b class="header">MaxPatchRecordIndex</b> <code>function MaxPatchRecordIndex: integer;</code>
@@ -530,6 +546,52 @@ end;
     <p id="PrintMXPFReport">
       <b class="header">PrintMXPFReport</b> <code>procedure PrintMXPFReport;</code>
       <br />
+      Prints a message to log the reporting on the number of copy operations
+      performed, the number that were successful, and the number that failed.
+    </p>
+<pre>LoadRecords('INGR');
+CopyRecordsToPatch;
+PrintMXPFReport;
+</pre>
+
+    <h2 id="links">Links</h2>
+    
+    <ul>
+      <li>
+        The CreationKit wiki's
+        <a href="http://www.creationkit.com/TES5Edit_Scripting_Functions">
+         TES5Edit Scripting Functions</a> page.  Provides a list of the
+         scripting functions xEdit makes available.
+      </li>
+      <li>
+        <a href="http://www.nexusmods.com/skyrim/mods/49373">
+        Automation Tools for TES5Edit</a>, a package of useful scripts for 
+        automating various TES5Edit tasks, and a good place to take 
+        inspiration from for script ideas and best practices.
+      </li>
+      <li>
+        The <a href="http://www.nexusmods.com/skyrim/mods/37981">
+        Merge Plugins xEdit Script</a>, one of the most complex and most 
+        widely used xEdit scripts.
+      </li>
+      <li>
+        ThreeTen's <a href="http://www.nexusmods.com/skyrim/mods/37981">
+        NPC Visual Transfer Tool</a>, a popular TES5Edit script for 
+        transferring NPC visual appearance.
+      </li>
+      <li>
+        <a href="http://www.nexusmods.com/skyrim/mods/59721">DynDOLOD</a>:
+        an extremely powerful TES5Edit script which makes use of 
+        TES5LodGen's LOD generation capabilities.
+      </li>
+    </ul>
+    
+    <h2 id="changelog">Changelog</h2>
+    
+    <p id="0.1.0">
+      <b class="header">0.1.0</b> &#8211; <small><i>August 31, 2015</i></small> &#8211; 
+      <a href="https://cdn.rawgit.com/matortheeternal/mxpf/0.1.0/documentation">Docs</a>
+      <br>Initial release of MXPF.
     </p>
   </div>
 </body>

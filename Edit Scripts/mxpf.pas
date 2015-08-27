@@ -26,7 +26,7 @@ const
   
   { DEVELOPER CONSTANTS - DON'T CHANGE }
   // version constant
-  mxVersion = '1.0.0';
+  mxVersion = '0.1.0';
   
   // mode constants
   mxExclusionMode = 1;
