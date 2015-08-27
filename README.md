@@ -5,7 +5,7 @@ MXPF is comprised a suite of functions that do the work of finding the records y
 
 # Dependencies
 * mteFunctions: Comes packaged with mxpf.  Updates available on [GitHub](https://github.com/matortheeternal/TES5EditScripts/blob/master/trunk/Edit%20Scripts/mteFunctions.pas).
-* xEdit: [GitHub](https://github.com/TES5Edit/TES5Edit)
+* xEdit: Download from [Nexus Mods](http://www.nexusmods.com/skyrim/mods/25859), or [GitHub](https://github.com/TES5Edit/TES5Edit)
 * Bethesda game: xEdit supports [Skyrim](http://store.steampowered.com/app/72850), 
 [Oblivion](http://store.steampowered.com/app/22330), 
 [Fallout 3](http://store.steampowered.com/app/22300), and 
