@@ -364,9 +364,6 @@ end;</pre>
       load order.
     </p>
 <pre>PatchFileByAuthor('MXPF ARMO Example');
-SetExclusions(mxHardcodedDatFiles);
-LoadRecords('ARMO');
-CopyRecordsToPatch;
 </pre>
 
     <p id="PatchFileByName">
@@ -383,9 +380,6 @@ CopyRecordsToPatch;
       it is more flexible.
     </p>
 <pre>PatchFileByName('MXPF ARMO Example.esp');
-SetExclusions(mxHardcodedDatFiles);
-LoadRecords('ARMO');
-CopyRecordsToPatch;
 </pre>
 
     <h2 id="file_selection">File Selection</h2>
@@ -401,7 +395,6 @@ CopyRecordsToPatch;
 SetExclusions(mxHardcodedDatFiles);
 // now we won't load records from any of the hardcoded dat files
 LoadRecords('ARMO');
-CopyRecordsToPatch;
 </pre>
 
     <p id="SetInclusions">
@@ -415,7 +408,6 @@ CopyRecordsToPatch;
 SetInclusions('Skyrim.esm');
 // now we will only load records from Skyrim.esm
 LoadRecords('ARMO');
-CopyRecordsToPatch;
 </pre>
 
     <h2 id="record_processing">Record Processing</h2>
