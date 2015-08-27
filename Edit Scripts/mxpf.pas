@@ -123,14 +123,8 @@ begin
 end;
   
 //=========================================================================
-// INITIALIZATION, FINALIZATION 
+// GENERAL
 //=========================================================================
-procedure DefaultOptionsMXPF;
-begin
-  mxLoadMasterRecords := true;
-  mxCopyWinningOverrides := true;
-end;
-
 procedure InitializeMXPF;
 begin
   mxInitialized := true;
@@ -146,6 +140,12 @@ begin
     DebugMessage('MXPF Initialized at '+TimeStr(Now));
     DebugMessage(' ');
   end;
+end;
+
+procedure DefaultOptionsMXPF;
+begin
+  mxLoadMasterRecords := true;
+  mxCopyWinningOverrides := true;
 end;
 
 procedure FinalizeMXPF;

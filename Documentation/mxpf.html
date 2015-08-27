@@ -304,21 +304,21 @@
 
     <h2 id="general">General</h2>
 
-    <p id="DefaultOptionsMXPF">
-      <b class="header">DefaultOptionsMXPF</b> <code>procedure DefaultOptionsMXPF;</code>
-      <br />
-      Sets default options in MXPF.  Usually you should call this whenever you
-      use MXPF, as it sets the options which is what most use cases require.  
-      This method sets <tt>mxLoadMasterRecords</tt> and <tt>mxCopyWinningOverrides</tt> 
-      to true.  You can call this method before calling <tt>InitializeMXPF</tt>.
-    </p>
-
     <p id="InitializeMXPF">
       <b class="header">InitializeMXPF</b> <code>procedure InitializeMXPF;</code>
       <br />
       Initializes MXPF.  You must call this at the beginning of every script 
       before attempting to access any other MXPF function (except
       <tt>DefaultOptionsMXPF</tt>).
+    </p>
+
+    <p id="DefaultOptionsMXPF">
+      <b class="header">DefaultOptionsMXPF</b> <code>procedure DefaultOptionsMXPF;</code>
+      <br />
+      Sets default options in MXPF.  Usually you should call this whenever you
+      use MXPF, as it sets the options that most use cases require.  This method 
+      sets <tt>mxLoadMasterRecords</tt> and <tt>mxCopyWinningOverrides</tt> 
+      to true.
     </p>
 
     <p id="FinalizeMXPF">
