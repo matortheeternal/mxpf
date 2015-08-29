@@ -168,8 +168,6 @@ begin
   
   // reset boolean variables to false
   mxInitialized := false;
-  mxDebug := false;
-  mxDebugVerbose := false;
   mxLoadCalled := false;
   mxCopyCalled := false;
   mxLoadMasterRecords := false;
@@ -179,12 +177,12 @@ begin
   mxRecordsCopied := 0;
   
   // free memory allocated for lists
-  mxDebugMessages.Free;
-  mxFailureMessages.Free;
-  mxFiles.Free;
-  mxMasters.Free;
-  mxRecords.Free;
-  mxPatchRecords.Free;
+  FreeAndNil(mxDebugMessages);
+  FreeAndNil(mxFailureMessages);
+  FreeAndNil(mxFiles);
+  FreeAndNil(mxMasters);
+  FreeAndNil(mxRecords);
+  FreeAndNil(mxPatchRecords);
 end;
 
 

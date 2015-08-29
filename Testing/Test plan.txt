@@ -1,0 +1,39 @@
+Test debug messages
+Test failure messages
+Test mxDebug = false
+Test mxDebugVerbose
+Test mxSaveDebug
+Test mxSaveFailures
+Test InitializeMXPF
+Test DefaultOptionsMXPF
+Test FinalizeMXPF
+
+Test PatchFileByAuthor
+-> InitializeMXPF not called
+  -> Verify mxPatchFile not assigned
+-> File exists
+  -> Verify mxPatchFile
+  -> Verify mxPatchFile's author
+-> File does not exist
+  -> Verify mxPatchFile
+  -> Verify mxPatchFile's author
+Test PatchFileByName
+-> InitializeMXPF not called
+  -> Verify mxPatchFile not assigned
+-> File exists
+  -> Verify mxPatchFile
+Test SetExclusions
+-> InitializeMXPF not called
+  -> Verify mxFileMode = 0
+  -> Verify mxFiles.Count = 0
+-> InitializeMXPF called
+  -> Verify mxFileMode = 1
+  -> Verify mxFiles = our files
+Test SetInclusions
+-> InitializeMXPF not called
+  -> Verify mxFileMode = 0
+  -> Verify mxFiles.Count = 0
+-> InitializeMXPF called
+  -> Verify mxFileMode = 2
+  -> Verify mxFiles = our files
+Test LoadRecords
