@@ -1,6 +1,6 @@
 unit UserScript;
 
-uses jvTest;
+uses 'lib\jvTest';
 
 procedure TestBooleans;
 begin

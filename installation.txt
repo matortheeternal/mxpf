@@ -3,8 +3,6 @@ by matortheeternal
 
 To install, simply copy the files in the Edit Scripts folder to xEdit's Edit Scripts folder.
 
-The Example Scripts folder has additional scripts you can copy into xEdit's Edit Scripts folder if you want to execute them.
-
 The Documentation folder contains all the documentation you'll need to get started using MXPF to automate the creation of patches in xEdit.
 
 Happy scripting!

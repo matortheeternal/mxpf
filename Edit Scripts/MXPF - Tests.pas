@@ -1,6 +1,6 @@
 unit UserScript;
 
-uses mxpf, jvTest;
+uses 'lib\mxpf', 'lib\jvTest';
 
 
 {******************************************************************************}
@@ -143,10 +143,7 @@ begin
       // All tests passed
       Pass;
     except 
-      on x: Exception do begin
-        if mxInitialized then FinalizeMXPF;
-        Fail(x);
-      end;
+      on x: Exception do Fail(x);
     end;
     
     // free stringlist
@@ -170,10 +167,7 @@ begin
     // All tests passed
     Pass;
   except 
-    on x: Exception do begin
-      if mxInitialized then FinalizeMXPF;
-      Fail(x);
-    end;
+    on x: Exception do Fail(x);
   end;
 end;
 
@@ -223,7 +217,7 @@ begin
       try
         InitializeMXPF;
         PatchFileByAuthor('SomeRandomAuthor');
-        Expect(not Assigned(mxPatchFile), 'Shouldn''t find a file');
+        Expect(not Assigned(mxPatchFile), 'Should not assign mxPatchFile');
         FinalizeMXPF;
         Pass;
       except 
@@ -272,6 +266,7 @@ begin
         InitializeMXPF;
         PatchFileByName('TestMXPF-1.esp');
         Expect(Assigned(mxPatchFile), 'Should find the file');
+        ExpectEqual('TestMXPF-1.esp', GetFileName(mxPatchFile), 'Filenames should match');
         FinalizeMXPF;
         Pass;
       except 
@@ -286,7 +281,7 @@ begin
       try
         InitializeMXPF;
         PatchFileByAuthor('SomeRandomFilename.esp');
-        Expect(not Assigned(mxPatchFile), 'Shouldn''t find a file');
+        Expect(not Assigned(mxPatchFile), 'Should not assign mxPatchFile');
         FinalizeMXPF;
         Pass;
       except 

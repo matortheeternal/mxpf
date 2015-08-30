@@ -8,7 +8,7 @@
 
 unit mxpf;
 
-uses mteFunctions;
+uses 'lib\mteFunctions';
 
 const
   { USER CONSTANTS - FEEL FREE TO CHANGE }
