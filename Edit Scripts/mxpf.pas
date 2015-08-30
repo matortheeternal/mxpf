@@ -51,7 +51,7 @@ var
   mxInitialized, mxLoadCalled, mxCopyCalled, mxLoadMasterRecords, 
   mxLoadOverrideRecords, mxCopyWinningOverrides, mxMastersAdded,
   mxSkipPatchedRecords, mxHideErrorPopups, mxDisallowNewFile,
-  mxDisallowSaving: boolean;
+  mxDisallowSaving, mxDisallowPrinting: boolean;
   mxPatchFile: IInterface;
 
 //=========================================================================
@@ -91,6 +91,9 @@ procedure PrintDebugMessages;
 begin
   // exit if no debug messages to print
   if (mxDebugMessages.Count = 0) then exit;
+  // exit if printing is disallowed
+  if mxDisallowPrinting then exit;
+  
   // else print to xEdit's log
   AddMessage(mxDebugMessages.Text);
 end;
@@ -124,6 +127,9 @@ procedure PrintFailureMessages;
 begin
   // exit if no failure messages to print
   if (mxFailureMessages.Count = 0) then exit;
+  // exit if printing is disallowed
+  if mxDisallowPrinting then exit;
+  
   // else print to xEdit's log
   AddMessage(mxFailureMessages.Text);
 end;

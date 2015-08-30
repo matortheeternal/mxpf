@@ -113,6 +113,9 @@ end;
 procedure Fail(x: Exception);
 begin
   jvtLogTest(jvtFailed+' '+x.Message);
+  if jvtMaxLevel >= jvtLevel then
+    jvtLogMessage(' ');
+    
   Dec(jvtLevel);
   jvtFailures.Add(IntToStr(jvtLevel));
 end;
@@ -136,9 +139,9 @@ begin
   if v1 <> v2 then begin
     vt := VarType(v1);
     case vt of
-      varInteger: raise Exception.Create(Format('Expected %d to equal %d', [v1, v2]));
-      varDouble: raise Exception.Create(Format('Expected %0.4f to equal %0.4f', [v1, v2]));
-      varString: raise Exception.Create(Format('Expected %s to equal %s', [v1, v2]));
+      varInteger: raise Exception.Create(Format('Expected "%d" to equal "%d"', [v1, v2]));
+      varDouble: raise Exception.Create(Format('Expected "%0.4f" to equal "%0.4f"', [v1, v2]));
+      varString: raise Exception.Create(Format('Expected "%s" to equal "%s"', [v1, v2]));
       else raise Exception.Create(test);
     end;
   end;
