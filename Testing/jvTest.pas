@@ -21,7 +21,7 @@ const
   jvtFailed = '[FAILED]';
 
 var
-  jvtLevel: Integer;
+  jvtLevel, jvtMaxLevel: Integer;
   jvtInitialized: boolean;
   jvtLog, jvtFailures: TStringList;
   
@@ -62,6 +62,7 @@ end;
 procedure jvtInitialize;
 begin
   jvtInitialized := true;
+  jvtMaxLevel := 1;
   jvtLog := TStringList.Create;
   jvtFailures := TStringList.Create;
   jvtLogMessage('JVT initialized at '+TimeToStr(Now));
@@ -102,7 +103,10 @@ begin
     raise Exception.Create(''));
   end;
   
-  jvtLogTest(jvtPassed);
+  if jvtMaxLevel >= jvtLevel then begin
+    jvtLogTest(jvtPassed);
+    jvtLogMessage(' ');
+  end;
   Dec(jvtLevel);
 end;
 
@@ -118,6 +122,26 @@ begin
   jvtLogTest(test);
   if not expectation then
     raise Exception.Create(test);
+end;
+
+procedure ExpectEqual(v1, v2: Variant; test: string);
+const
+  varInteger = 3;
+  varDouble = 5;
+  varString = 258;
+var
+  vt: Integer;
+begin
+  jvtLogTest(test);
+  if v1 <> v2 then begin
+    vt := VarType(v1);
+    case vt of
+      varInteger: raise Exception.Create(Format('Expected %d to equal %d', [v1, v2]));
+      varDouble: raise Exception.Create(Format('Expected %0.4f to equal %0.4f', [v1, v2]));
+      varString: raise Exception.Create(Format('Expected %s to equal %s', [v1, v2]));
+      else raise Exception.Create(test);
+    end;
+  end;
 end;
 
 end.

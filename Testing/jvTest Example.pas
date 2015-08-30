@@ -76,6 +76,16 @@ begin
     Fail(x);
   end;
   
+  Describe('ExpectEqual');
+  try
+    ExpectEqual('Test', 'Test', 'Equal strings');
+    ExpectEqual(1, 1, 'Equal integers');
+    ExpectEqual(1.23, 1.23, 'Equal floats');
+    Pass;
+  except on x: Exception do
+    Fail(x);
+  end;
+  
   // finalize jvt
   jvtFinalize;
 end;
