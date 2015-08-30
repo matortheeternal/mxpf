@@ -81,7 +81,7 @@ begin
   if mxDisallowSaving then exit;
   
   // save to mxpf logs folder in scripts path
-  filename := ScriptsPath + 'mxpf\logs\mxpf-debug-'+FileDateTimeStr(Now)+'.txt';
+  filename := ScriptsPath + 'logs\mxpf\mxpf-debug-'+FileDateTimeStr(Now)+'.txt';
   AddMessage('MXPF Debug Log saved to '+filename);
   ForceDirectories(ExtractFilePath(filename));
   mxDebugMessages.SaveToFile(filename);
@@ -117,7 +117,7 @@ begin
   if mxDisallowSaving then exit;
   
   // save to mxpf logs folder in scripts path
-  filename := ScriptsPath + 'mxpf\logs\mxpf-failures-'+FileDateTimeStr(Now)+'.txt';
+  filename := ScriptsPath + 'logs\mxpf\mxpf-failures-'+FileDateTimeStr(Now)+'.txt';
   AddMessage('MXPF Failures Log saved to '+filename);
   ForceDirectories(ExtractFilePath(filename));
   mxFailureMessages.SaveToFile(filename);
@@ -540,6 +540,21 @@ begin
   end;
 end;
 
+function MaxRecordIndex: Integer;
+begin
+  // if user hasn't initialized MXPF, show error message and exit
+  if not mxInitialized then begin
+    if not mxHideErrorPopups then 
+      ShowMessage('MXPF Error: You need to call InitialzeMXPF before calling MaxRecordIndex');
+    Result := -1;
+    exit;
+  end;
+  
+  // return value if checks pass
+  Result := mxRecords.Count - 1;
+  if mxDebug then DebugMessage(Format('MXPF: MaxRecordIndex returned %d', [Result]));
+end;
+
 function GetRecord(i: integer): IInterface;
 begin
   // if user hasn't initialized MXPF, show error message and exit
@@ -560,6 +575,10 @@ begin
       ShowMessage('MXPF Error: Can''t call GetRecord, no records available');
     exit;
   end;
+  
+  // if index is out of bounds, raise an exception
+  if (i < 0) or (i > MaxRecordIndex) then
+    raise Exception.Create('Index out of bounds!');
   
   // if all checks pass, return record at user specified index
   Result := ObjectToElement(mxRecords[i]);
@@ -589,24 +608,14 @@ begin
     exit;
   end;
   
+  // if index is out of bounds, raise an exception
+  if (i < 0) or (i > MaxRecordIndex) then
+    raise Exception.Create('Index out of bounds!');
+  
   // if all checks pass, remove record at user specified index
   n := Name(ObjectToElement(mxRecords[i]));
   mxRecords.Delete(i);
   if mxDebug then DebugMessage(Format('MXPF: Removed record at index %d, %s', [i, n]));
-end;
-
-function MaxRecordIndex: Integer;
-begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitialzeMXPF before calling MaxRecordIndex');
-    exit;
-  end;
-  
-  // return value if checks pass
-  Result := mxRecords.Count - 1;
-  if mxDebug then DebugMessage(Format('MXPF: MaxRecordIndex returned %d', [Result]));
 end;
 
 //=========================================================================
@@ -745,6 +754,20 @@ begin
   end;
 end;
 
+function MaxPatchRecordIndex: Integer;
+begin
+  // if user hasn't initialized MXPF, show error message and exit
+  if not mxInitialized then begin
+    if not mxHideErrorPopups then 
+      ShowMessage('MXPF Error: You need to call InitialzeMXPF before calling MaxPatchRecordIndex');
+    exit;
+  end;
+  
+  // return value if checks pass
+  Result := mxPatchRecords.Count - 1;
+  if mxDebug then DebugMessage(Format('MXPF: MaxPatchRecordIndex returned %d', [Result]));
+end;
+
 function GetPatchRecord(i: Integer): IInterface;
 begin
   // if user hasn't initialized MXPF, show error message and exit
@@ -766,23 +789,13 @@ begin
     exit;
   end;
   
+  // if index is out of bounds, raise an exception
+  if (i < 0) or (i > MaxPatchRecordIndex) then
+    raise Exception.Create('Index out of bounds!');
+  
   // if all checks pass, return record at user specified index
   Result := ObjectToElement(mxPatchRecords[i]);
   if mxDebug then DebugMessage(Format('MXPF: GetPatchRecord at index %d returned %s', [i, Name(Result)]));
-end;
-
-function MaxPatchRecordIndex: Integer;
-begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitialzeMXPF before calling MaxPatchRecordIndex');
-    exit;
-  end;
-  
-  // return value if checks pass
-  Result := mxPatchRecords.Count - 1;
-  if mxDebug then DebugMessage(Format('MXPF: MaxPatchRecordIndex returned %d', [Result]));
 end;
 
 //=========================================================================

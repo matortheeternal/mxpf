@@ -60,3 +60,40 @@ TEST RECORD PROCESSING
     -> Verify mxRecords.Count
   - Test mxLoadOverrideRecords
     -> Verify mxRecords.Count
+  Test MaxRecordIndex
+  - InitializeMXPF not called
+    -> Verify it returns -1
+  - InitializeMXPF called
+    -> Verify it returns mxRecords.Count - 1
+  Test GetRecord
+  - InitializeMXPF not called
+    -> Verify it returns nil
+  - LoadRecords not called
+    -> Verify it returns nil
+  - No records
+    -> Verify it returns nil
+  - Invalid index
+    -> Verify it throws an exception
+  - Valid index
+    -> Verify it returns the correct record
+  Test RemoveRecord
+  - InitializeMXPF not called
+    -> Verify it doesn't throw an exception
+  - LoadRecords not called
+    -> Verify it doesn't throw an exception
+  - mxRecords.Count = 0
+    -> Verify it doesn't throw an exception
+  - Invalid index
+    -> Verify it throws an exceltion
+  - Valid index
+    -> Verify it removes the record from mxRecords
+
+TEST RECORD PATCHING
+  Test AddMastersToPatch
+  Test CopyRecordToPatch
+  Test CopyRecordsToPatch
+  Test MaxPatchRecordIndex
+  Test GetPatchRecord
+  
+TEST REPORTING
+  Test PrintMXPFReport

@@ -242,7 +242,7 @@ begin
         end;
       end;
       
-      // All tests passed.
+      // All tests passed?
       Pass;
     except 
       on x: Exception do Fail(x);
@@ -291,7 +291,7 @@ begin
         end;
       end;
       
-      // All tests passed.
+      // All tests passed?
       Pass;
     except 
       on x: Exception do Fail(x);
@@ -345,7 +345,7 @@ begin
         end;
       end;
       
-      // All tests passed.
+      // All tests passed?
       Pass;
     except 
       on x: Exception do begin
@@ -383,7 +383,7 @@ begin
         end;
       end;
       
-      // All tests passed.
+      // All tests passed?
       Pass;
     except 
       on x: Exception do Fail(x);
@@ -407,6 +407,9 @@ end;
 {******************************************************************************}
 
 procedure TestRecordProcessing;
+var
+  bCaughtException: boolean;
+  rec: IInterface;
 begin
    Describe('Record Processing');
   try
@@ -524,12 +527,256 @@ begin
         end;
       end;
       
-      // All tests passed.
+      // Test group not found in file selection
+      Describe('Empty group');
+      try
+        InitializeMXPF;
+        SetExclusions('Skyrim.esm');
+        LoadRecords('SLGM');
+        ExpectEqual(mxRecords.Count, 0, 'Should load 0 records');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // All tests passed?
       Pass;
     except 
       on x: Exception do Fail(x);
     end;
     
+    Describe('MaxRecordIndex');
+    try
+      // Test with MXPF not initialized
+      Describe('MXPF not initialized');
+      try
+        LoadRecords('ARMO');
+        ExpectEqual(MaxRecordIndex, -1, 'Should return -1');
+        Pass;
+      except 
+        on x: Exception do Fail(x);
+      end;
+      
+      // Test with MXPF initialized
+      Describe('MXPF initialized');
+      try
+        InitializeMXPF;
+        PatchFileByName('TestMXPF-2.esp');
+        LoadRecords('ARMO');
+        ExpectEqual(MaxRecordIndex, mxRecords.Count - 1, 'Should return mxRecords.Count - 1');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // All tests passed?
+      Pass;
+    except
+      on x: Exception do Fail(x);
+    end;
+    
+    Describe('GetRecord');
+    try
+      // Test with MXPF not initialized
+      Describe('MXPF not initialized');
+      try
+        rec := GetRecord(0);
+        Expect(true, 'Should not throw an exception');
+        Expect(not Assigned(rec), 'Should return nil');
+        Pass;
+      except 
+        on x: Exception do Fail(x);
+      end;
+      
+      // Test with LoadRecords not called
+      Describe('LoadRecords not called');
+      try
+        InitializeMXPF;
+        rec := GetRecord(0);
+        Expect(true, 'Should not throw an exception');
+        Expect(not Assigned(rec), 'Should return nil');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with mxRecords.Count = 0
+      Describe('mxRecords.Count = 0');
+      try
+        InitializeMXPF;
+        SetExclusions('Skyrim.esm');
+        LoadRecords('SLGM');
+        rec := GetRecord(0);
+        Expect(true, 'Should not throw an exception');
+        Expect(not Assigned(rec), 'Should return nil');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with an invalid index
+      Describe('Invalid index');
+      try
+        try
+          InitializeMXPF;
+          SetExclusions('Skyrim.esm');
+          LoadRecords('ARMO');
+          GetRecord(-1);
+        except 
+          on x: Exception do begin
+            ExpectEqual(x.Message, 'Index out of bounds!', 
+              'Should raise an index out of bounds exception');
+            bCaughtException := true;
+          end;
+        end;
+        // if no exception caught, fail test
+        if not bCaughtException then
+          Expect(false, 'Should raise an index out of bounds exception');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with valid index
+      Describe('Valid index');
+      try
+        InitializeMXPF;
+        SetExclusions('Skyrim.esm');
+        PatchFileByName('TestMXPF-2.esp');
+        LoadRecords('ASTP');
+        Expect(Assigned(GetRecord(0)), 'Should return a record');
+        ExpectEqual(Name(GetRecord(0)), 'Friend [ASTP:01000800]', 'Should return the corect record');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // All tests passed?
+      Pass;
+    except
+      on x: Exception do Fail(x);
+    end;
+    
+    Describe('RemoveRecord');
+    try
+      // Test with MXPF not initialized
+      Describe('MXPF not initialized');
+      try
+        RemoveRecord(0);
+        Expect(true, 'Should not throw an exception');
+        Pass;
+      except 
+        on x: Exception do Fail(x);
+      end;
+      
+      // Test with LoadRecords not called
+      Describe('LoadRecords not called');
+      try
+        InitializeMXPF;
+        RemoveRecord(0);
+        Expect(true, 'Should not throw an exception');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with mxRecords.Count = 0
+      Describe('mxRecords.Count = 0');
+      try
+        InitializeMXPF;
+        SetExclusions('Skyrim.esm');
+        LoadRecords('SLGM');
+        RemoveRecord(0);
+        Expect(true, 'Should not throw an exception');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with an invalid index
+      Describe('Invalid index');
+      try
+        try
+          InitializeMXPF;
+          SetExclusions('Skyrim.esm');
+          LoadRecords('ARMO');
+          RemoveRecord(-1);
+        except 
+          on x: Exception do begin
+            ExpectEqual(x.Message, 'Index out of bounds!', 
+              'Should raise an index out of bounds exception');
+            bCaughtException := true;
+          end;
+        end;
+        // if no exception caught, fail test
+        if not bCaughtException then
+          Expect(false, 'Should raise an index out of bounds exception');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with valid index
+      Describe('Valid index');
+      try
+        InitializeMXPF;
+        SetExclusions('Skyrim.esm');
+        PatchFileByName('TestMXPF-2.esp');
+        LoadRecords('ASTP');
+        RemoveRecord(0);
+        ExpectEqual(mxRecords.Count, 0, 'Should remove the record at the index');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // All tests passed?
+      Pass;
+    except
+      on x: Exception do Fail(x);
+    end;
+    
+    // All tests passed?
     Pass;
   except 
     on x: Exception do Fail(x);

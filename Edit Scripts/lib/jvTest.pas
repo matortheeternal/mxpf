@@ -47,7 +47,7 @@ begin
   if (jvtLog.Count = 0) then exit;
   
   // save to mxpf logs folder in scripts path
-  filename := ScriptsPath + 'jvt\logs\jvt-'+FormatDateTime('mmddyy_hhnnss', Now)+'.txt';
+  filename := ScriptsPath + 'logs\jvt\jvt-'+FormatDateTime('mmddyy_hhnnss', Now)+'.txt';
   AddMessage('JVT Log saved to '+filename);
   ForceDirectories(ExtractFilePath(filename));
   jvtLog.SaveToFile(filename);
