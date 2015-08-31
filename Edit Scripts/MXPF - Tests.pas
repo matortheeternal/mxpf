@@ -897,6 +897,7 @@ procedure TestRecordPatching;
 var
   bCaughtException: boolean;
   rec: IInterface;
+  s: string;
   sl: TStringList;
 begin
    Describe('Record Patching');
@@ -999,6 +1000,215 @@ begin
       on x: Exception do Fail(x);
     end;
     
+    Describe('CopyRecordToPatch');
+    try
+      // Test with MXPF not initialized
+      Describe('MXPF not initialized');
+      try
+        bCaughtException := false;
+        try
+          CopyRecordToPatch(0);
+        except 
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitialzeMXPF before calling CopyRecordToPatch', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Expect(not mxCopyCalled, 'Should not set mxCopyCalled to true');
+        Pass;
+      except 
+        on x: Exception do Fail(x);
+      end;
+      
+      // Test with LoadRecords not called
+      Describe('LoadRecords not called');
+      try
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          CopyRecordToPatch(0);
+        except 
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call LoadRecords before you can copy records using CopyRecordToPatch', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Expect(not mxCopyCalled, 'Should not set mxCopyCalled to true');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with mxPatchFile not assigned
+      Describe('mxPatchFile not assigned');
+      try
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          SetExclusions('Skyrim.esm');
+          LoadRecords('ARMO');
+          CopyRecordToPatch(0);
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to assign mxPatchFile using PatchFileByAuthor or PatchFileByName before calling CopyRecordToPatch', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Expect(not mxCopyCalled, 'Should not set mxCopyCalled to true');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with no records available
+      Describe('No records available');
+      try
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          PatchFileByName('TestMXPF-3.esp');
+          SetExclusions('Skyrim.esm');
+          LoadRecords('SLGM');
+          CopyRecordToPatch(0);
+        except 
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: Can''t call CopyRecordToPatch, no records available', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Expect(not mxCopyCalled, 'Should not set mxCopyCalled to true');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test invalid index
+      Describe('Invalid index');
+      try
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          SetExclusions('Skyrim.esm');
+          PatchFileByName('TestMXPF-3.esp');
+          LoadRecords('ARMO');
+          CopyRecordToPatch(-1);
+        except 
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: CopyRecordToPatch index out of bounds', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Expect(not mxCopyCalled, 'Should not set mxCopyCalled to true');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test valid index
+      Describe('Valid index');
+      try
+        InitializeMXPF;
+        SetExclusions('Skyrim.esm');
+        PatchFileByName('TestMXPF-3.esp');
+        LoadRecords('ARMO');
+        rec := CopyRecordToPatch(0);
+        s := Name(rec);
+        Remove(rec);
+        Expect(mxCopyCalled, 'Should set mxCopyCalled to true');
+        Expect(mxMastersAdded, 'Should set mxMastersAdded to true');
+        ExpectEqual(mxPatchRecords.Count, 1, 'Should add the record to mxPatchRecords');
+        ExpectEqual(s, 'ArmorIronGauntlets "Iron Gauntlets" [ARMO:00012E46]', 'Record should be present in the patch file');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test mxCopyWinningOverrides
+      Describe('mxCopyWinningOverrides');
+      try
+        InitializeMXPF;
+        mxCopyWinningOverrides := true;
+        SetExclusions('Skyrim.esm');
+        PatchFileByName('TestMXPF-3.esp');
+        LoadRecords('ARMO');
+        rec := CopyRecordToPatch(0);
+        s := GetElementEditValues(rec, 'DNAM');
+        Remove(rec);
+        ExpectEqual(s, '15.000000', 'Should copy the winning override record');
+        FinalizeMXPF;
+        
+        // when winning override is in a file not in the file selection
+        InitializeMXPF;
+        mxCopyWinningOverrides := true;
+        SetExclusions('Skyrim.esm');
+        PatchFileByName('TestMXPF-2.esp');
+        LoadRecords('WEAP');
+        rec := CopyRecordToPatch(0);
+        s := GetElementEditValues(rec, 'DATA\Damage');
+        Remove(rec);
+        ExpectEqual(s, '8', 'Should not copy winning override from file outside of the file selection');
+        FinalizeMXPF;
+        
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test mxSkipPatchedRecords
+      Describe('mxSkipPatchedRecords');
+      try
+        InitializeMXPF;
+        mxSkipPatchedRecords := true;
+        SetExclusions('Skyrim.esm');
+        PatchFileByName('TestMXPF-3.esp');
+        LoadRecords('WEAP');
+        Expect(not mxCopyCalled, 'Should not set mxCopyCalled to true');
+        Expect(not mxMastersAdded, 'Should not set mxMastersAdded to true');
+        ExpectEqual(mxPatchRecords.Count, 0, 'Should not add record to mxPatchRecords');
+        Expect(not Assigned(CopyRecordToPatch(0)), 'Should not return a record');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // All tests passed?
+      Pass;
+    except
+      on x: Exception do Fail(x);
+    end;
+    
     // All tests passed?
     Pass;
   except 
@@ -1020,7 +1230,6 @@ begin
   jvtInitialize;
   
   // set up MXPF for testing environment
-  mxHideErrorPopups := true;
   mxDisallowNewFile := true;
   mxDisallowSaving := true;
   mxDisallowPrinting := true;

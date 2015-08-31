@@ -50,8 +50,8 @@ var
   mxFileMode, mxRecordsCopied, mxRecordsFound: Integer;
   mxInitialized, mxLoadCalled, mxCopyCalled, mxLoadMasterRecords, 
   mxLoadOverrideRecords, mxCopyWinningOverrides, mxMastersAdded,
-  mxSkipPatchedRecords, mxHideErrorPopups, mxDisallowNewFile,
-  mxDisallowSaving, mxDisallowPrinting: boolean;
+  mxSkipPatchedRecords, mxDisallowNewFile, mxDisallowSaving, 
+  mxDisallowPrinting: boolean;
   mxPatchFile: IInterface;
 
 //=========================================================================
@@ -610,6 +610,9 @@ begin
   // if user hasn't loaded records, raise exception
   if not mxLoadCalled then
     raise Exception.Create('MXPF Error: You need to call LoadRecords before you can copy records using CopyRecordToPatch');
+  // if user hasn't assigned a patch file, raise exception
+  if not Assigned(mxPatchFile) then
+    raise Exception.Create('MXPF Error: You need to assign mxPatchFile using PatchFileByAuthor or PatchFileByName before calling CopyRecordToPatch');
   // if no records available, raise exception
   if mxRecords.Count = 0 then
     raise Exception.Create('MXPF Error: Can''t call CopyRecordToPatch, no records available');
@@ -617,18 +620,25 @@ begin
   if (i < 0) or (i > MaxRecordIndex) then
     raise Exception.Create('MXPF Error: CopyRecordToPatch index out of bounds');
   
+  // if all checks pass, try copying record
+  rec := ObjectToElement(mxRecords[i]);
+    
+  // exit if record already exists in patch
+  if mxSkipPatchedRecords and OverrideExistsIn(rec, mxPatchFile) then begin
+    DebugMessage(Format('Skipping record %s, already in patch!', [Name(rec)]));
+    exit;
+  end;
+  
   // set boolean so we know the user called this function
   mxCopyCalled := true;
   
   // add masters to patch file if we haven't already
   if not mxMastersAdded then AddMastersToPatch;
   
-  // if all checks pass, try copying record
-  rec := ObjectToElement(mxRecords[i]);
-  if mxCopyWinningOverrides then rec := WinningOverride(rec);
-  // record already in patch
-  if Equals(GetFile(rec), mxPatchFile) and mxSkipPatchedRecords then begin
-    DebugMessage('Skipping record %s, already in patch!', [Name(rec)]);
+  // copy record to patch
+  if mxCopyWinningOverrides then rec := WinningOverrideBefore(rec, mxPatchFile);
+  if not Assigned(rec) then begin
+    DebugMessage('Couldn''t find winning override!');
     exit;
   end;
   try
@@ -667,9 +677,9 @@ begin
   // if all checks pass, loop through records list
   for i := 0 to Pred(mxRecords.Count) do begin
     rec := ObjectToElement(mxRecords[i]);
-    if mxCopyWinningOverrides then rec := WinningOverride(rec);
+    if mxCopyWinningOverrides then rec := WinningOverrideBefore(mxPatchFile, rec);
     // record already in patch
-    if Equals(GetFile(rec), mxPatchFile) and mxSkipPatchedRecords then begin
+    if mxSkipPatchedRecords and OverrideExistsIn(mxPatchFile, rec) then begin
       DebugMessage('Skipping record %s, already in patch!', [Name(rec)]);
       continue;
     end;

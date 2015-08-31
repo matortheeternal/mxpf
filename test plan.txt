@@ -109,6 +109,9 @@ TEST RECORD PATCHING
   - LoadRecords not called
     -> Verify it throws an exception
     -> Verify mxCopyCalled is false
+  - mxPatchFile not assigned
+    -> Verify it throws an exception
+    -> Verify mxCopyCalled is false
   - No records
     -> Verify it throws an exception
     -> Verify mxCopyCalled is false

@@ -51,6 +51,10 @@
   - [SetAuthor]: Sets the author of a file.
   - [FileByName]: gets a file from a filename.
   - [FileByAuthor]: gets a file from an author.
+  - [OverrideExistsIn]: returns whether or not an override exists for the specified 
+    record in the specified file.
+  - [WinningOverrideBefore]: returns the most winning override of a record in a 
+    file which has a load order less than the load order of the specified file.
   - [OverrideByFile]: gets the override for a particular record in a particular file,
     if it exists.
   - [OverrideRecordCount]: gets the number of override records in a file or record group.
@@ -1065,6 +1069,65 @@ begin
       break;
     end;
   end;
+end;
+
+{
+  OverrideExistsIn:
+  Returns whether or not an override for the specified record exists
+  in the specified file.
+  
+  Example usage:
+  f := FileByName('Update.esm');
+  e := MasterOrSelf(RecordByIndex(f, 1));
+  if OverrideExistsIn(e, f) then
+    AddMessage('Yay');
+}
+function OverrideExistsIn(e, f: IInterface): boolean;
+var
+  i: Integer;
+  ovr: IInterface;
+begin
+  Result := false;
+  e := MasterOrSelf(e);
+  for i := 0 to Pred(OverrideCount(e)) do begin
+    ovr := OverrideByIndex(e, i);
+    if Equals(GetFile(ovr), f) then begin
+      Result := true;
+      break;
+    end;
+  end;
+end;
+
+{
+  WinningOverrideBefore:
+  Returns the most winning override of a record, @e, in a file of lower
+  load order than @f.
+  
+  Example usage:
+  e := RecordByIndex(FileByName('Skyrim.esm'), 3401);
+  f := FileByName('Dragonborn.esm');
+  WinningOverrideBefore(e, f);
+}
+function WinningOverrideBefore(e, f: IInterface): IInterface;
+var
+  i, targetLoadOrder: Integer;
+  ovr, previousOvr, ovrFile: IInterface;
+begin
+  Result := nil;
+  e := MasterOrSelf(e);
+  previousOvr := e;
+  targetLoadOrder := GetLoadOrder(f);
+  for i := 0 to Pred(OverrideCount(e)) do begin
+    ovr := OverrideByIndex(e, i);
+    ovrFile := GetFile(ovr);
+    if GetLoadOrder(GetFile(ovr)) >= targetLoadOrder then begin
+      Result := previousOvr;
+      break;
+    end;
+    previousOvr := ovr;
+  end;
+  if not Assigned(Result) then
+    Result := ovr;
 end;
 
 {

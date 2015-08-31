@@ -131,7 +131,8 @@ procedure ExpectEqual(v1, v2: Variant; test: string);
 const
   varInteger = 3;
   varDouble = 5;
-  varString = 258;
+  varString =  256;
+  varUString = 258;
 var
   vt: Integer;
 begin
@@ -139,10 +140,10 @@ begin
   if v1 <> v2 then begin
     vt := VarType(v1);
     case vt of
-      varInteger: raise Exception.Create(Format('Expected "%d" to equal "%d"', [v1, v2]));
-      varDouble: raise Exception.Create(Format('Expected "%0.4f" to equal "%0.4f"', [v1, v2]));
-      varString: raise Exception.Create(Format('Expected "%s" to equal "%s"', [v1, v2]));
-      else raise Exception.Create(test);
+      varInteger: raise Exception.Create(Format('Expected "%d", found "%d"', [v2, v1]));
+      varDouble: raise Exception.Create(Format('Expected "%0.4f", found "%0.4f"', [v2, v1]));
+      varString, varUString: raise Exception.Create(Format('Expected "%s", found "%s"', [v2, v1]));
+      else raise Exception.Create(test + ', type ' + IntToStr(vt));
     end;
   end;
 end;
