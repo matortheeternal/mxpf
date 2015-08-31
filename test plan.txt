@@ -78,22 +78,97 @@ TEST RECORD PROCESSING
     -> Verify it returns the correct record
   Test RemoveRecord
   - InitializeMXPF not called
-    -> Verify it doesn't throw an exception
+    -> Verify it throws an exception
   - LoadRecords not called
-    -> Verify it doesn't throw an exception
+    -> Verify it throws an exception
   - mxRecords.Count = 0
-    -> Verify it doesn't throw an exception
+    -> Verify it throws an exception
   - Invalid index
-    -> Verify it throws an exceltion
+    -> Verify it throws an exception
   - Valid index
     -> Verify it removes the record from mxRecords
 
 TEST RECORD PATCHING
   Test AddMastersToPatch
+  - InitializeMXPF not called
+    -> Verify it throws an exception
+    -> Verify mxMastersAdded is false
+  - LoadRecords not called
+    -> Verify it throws an exception
+    -> Verify mxMastersAdded is false
+  - mxPatchfile not assigned
+    -> Verify it throws an exception
+    -> Verify mxMastersAdded is false
+  - mxPatchfile assigned
+    -> Verify mxMastersAdded is true
+    -> Verify the patch file has the new masters
   Test CopyRecordToPatch
+  - InitializeMXPF not called
+    -> Verify it throws an exception
+    -> Verify mxCopyCalled is false
+  - LoadRecords not called
+    -> Verify it throws an exception
+    -> Verify mxCopyCalled is false
+  - No records
+    -> Verify it throws an exception
+    -> Verify mxCopyCalled is false
+  - Invalid index
+    -> Verify it throws an exception
+    -> Verify mxCopyCalled is false
+  - Valid index
+    -> Verify mxCopyCalled is true
+    -> Verify mxMastersAdded is true
+    -> Verify the record is added to mxPatchRecords
+    -> Verify the record is present in the patch file
+  - mxCopyWinningOverrides
+    -> Verify the record copied is the winning override
+    -> Verify when winning override is in a file not in the file selection
+  - mxSkipPatchedRecords
+    -> Verify mxCopyCalled is false
+    -> Verify mxMastersAdded is false
+    -> Verify the record isn't added to mxPatchRecords
+    -> Verify the record isn't present in the patch file
   Test CopyRecordsToPatch
+  - InitializeMXPF not called
+    -> Verify it throws an exception
+    -> Verify mxCopyCalled is false
+  - LoadRecords not called
+    -> Verify it throws an exception
+    -> Verify mxCopyCalled is false
+  - No records
+    -> Verify it throws an exception
+    -> Verify mxCopyCalled is false
+  - Records loaded
+    -> Verify mxCopyCalled is true
+    -> Verify mxMastersAdded is true
+    -> Verify mxPatchRecords.Count
+    -> Verify records are in patch file
+  - mxCopyWinningOverrides
+    -> Verify the record copied is the winning override
+    -> Verify when winning override is in a file not in the file selection
+  - mxSkipPatchedRecords
+    -> Verify mxCopyCalled is false
+    -> Verify mxMastersAdded is false
+    -> Verify the record isn't added to mxPatchRecords
+    -> Verify the record isn't present in the patch file
   Test MaxPatchRecordIndex
+  - InitializeMXPF not called
+    -> Verify it returns -1
+  - InitializeMXPF called
+    -> Verify it returns mxRecords.Count - 1
   Test GetPatchRecord
+  - InitializeMXPF not called
+    -> Verify it returns nil
+  - No records copied
+    -> Verify it returns nil
+  - No records
+    -> Verify it returns nil
+  - Invalid index
+    -> Verify it throws an exception
+  - Valid index
+    -> Verify it returns the correct record
   
 TEST REPORTING
   Test PrintMXPFReport
+  - InitializeMXPF not called
+    -> Verify it throws an exception

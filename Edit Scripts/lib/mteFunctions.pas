@@ -99,6 +99,7 @@
   - [ExtractPathBSA]: extracts the contents of a BSA from a specified subpath to the 
     specified path.
   - [PrintBSAContents]: prints the contents of a BSA to xEdit's message log.
+  - [GetMasters]: adds masters from the specified file to the specified stringlist.
   - [AddMastersToList]: adds masters from the specified file (and the file itself) to 
     the specified stringlist.
   - [AddMastersToFile]: adds masters to the specified file from the specified stringlist.
@@ -1891,6 +1892,32 @@ begin
 end;
 
 {
+  GetMasters:
+  Adds the masters from a specific file to a specified stringlist.
+  
+  Example usage:
+  slMasters := TStringList.Create;
+  GetMasters(FileByName('Dragonborn.esm'), slMasters);
+  slMasters.Free;
+}
+procedure GetMasters(f: IInterface; var sl: TStringList);
+var
+  masters, master: IInterface;
+  i: integer;
+  s: string;
+begin  
+  masters := ElementByPath(ElementByIndex(f, 0), 'Master Files');
+  if not Assigned(masters) then exit;
+  
+  // loop through masters
+  for i := 0 to ElementCount(masters) - 1 do begin
+    master := ElementByIndex(masters, i);
+    s := GetElementEditValues(master, 'MAST');
+    if (sl.IndexOf(s) = -1) then sl.Add(s);
+  end;
+end;
+
+{
   AddMastersToList:
   Adds the masters from a specific file, and the file itself, to a 
   specified stringlist.
@@ -1898,6 +1925,7 @@ end;
   Example usage:
   slMasters := TStringList.Create;
   AddMastersToList(FileByName('Dragonborn.esm'), slMasters);
+  slMasters.Free;
 }
 procedure AddMastersToList(f: IInterface; var lst: TStringList);
 var

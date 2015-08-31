@@ -181,6 +181,8 @@ end;
 {******************************************************************************}
 
 procedure TestPatchFileSelection;
+var
+  bCaughtException: boolean;
 begin
   Describe('Patch File Selection');
   try
@@ -189,7 +191,16 @@ begin
       // Test MXPF not initialized
       Describe('MXPF not initialized');
       try
-        PatchFileByAuthor('MXPF Tests');
+        bCaughtException := false;
+        try
+          PatchFileByAuthor('MXPF Tests');
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitializeMXPF before calling PatchFileByAuthor', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
         Expect(not Assigned(mxPatchFile), 'Should not assign mxPatchFile');
         Pass;
       except 
@@ -217,6 +228,7 @@ begin
       try
         InitializeMXPF;
         PatchFileByAuthor('SomeRandomAuthor');
+        Expect(true, 'Should not throw an exception');
         Expect(not Assigned(mxPatchFile), 'Should not assign mxPatchFile');
         FinalizeMXPF;
         Pass;
@@ -253,7 +265,16 @@ begin
       // Test MXPF not initialized
       Describe('MXPF not initialized');
       try
+        bCaughtException := false;
+        try
         PatchFileByName('TestMXPF-1.esp');
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitializeMXPF before calling PatchFileByName', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
         Expect(not Assigned(mxPatchFile), 'Should not assign mxPatchFile');
         Pass;
       except 
@@ -281,6 +302,7 @@ begin
       try
         InitializeMXPF;
         PatchFileByAuthor('SomeRandomFilename.esp');
+        Expect(true, 'Should not throw an exception');
         Expect(not Assigned(mxPatchFile), 'Should not assign mxPatchFile');
         FinalizeMXPF;
         Pass;
@@ -297,6 +319,7 @@ begin
       on x: Exception do Fail(x);
     end;
     
+    // All tests passed?
     Pass;
   except 
     on x: Exception do Fail(x);
@@ -313,6 +336,8 @@ end;
 {******************************************************************************}
 
 procedure TestFileSelection;
+var
+  bCaughtException: boolean;
 begin
    Describe('File Selection');
   try
@@ -321,7 +346,16 @@ begin
       // Test with MXPF not initialized
       Describe('MXPF not initialized');
       try
-        SetExclusions('TestMXPF-2.esp');
+        bCaughtException := false;
+        try
+          SetExclusions('TestMXPF-2.esp');
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitializeMXPF before calling SetExclusions', 'Should raise the correction exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
         ExpectEqual(mxFileMode, 0, 'Should not change mxFileMode');
         Pass;
       except 
@@ -348,10 +382,7 @@ begin
       // All tests passed?
       Pass;
     except 
-      on x: Exception do begin
-        if mxInitialized then FinalizeMXPF;
-        Fail(x);
-      end;
+      on x: Exception do Fail(x);
     end;
     
     Describe('SetInclusions');
@@ -359,7 +390,16 @@ begin
       // Test with MXPF not initialized
       Describe('MXPF not initialized');
       try
-        SetInclusions('TestMXPF-1.esp,TestMXPF-2.esp');
+        bCaughtException := false;
+        try
+          SetInclusions('TestMXPF-1.esp,TestMXPF-2.esp');
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitializeMXPF before calling SetInclusions', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
         ExpectEqual(mxFileMode, 0, 'Should not change mxFileMode');
         Pass;
       except 
@@ -398,7 +438,7 @@ end;
 
 {******************************************************************************}
 { TEST RECORD PROCESSING
-  Tests RecordProcessing MXPF functions:
+  Tests Record Processing MXPF functions:
     - LoadRecords
     - GetRecord
     - RemoveRecord
@@ -418,11 +458,19 @@ begin
       // Test with MXPF not initialized
       Describe('MXPF not initialized');
       try
-        LoadRecords('ARMO');
-        Expect(true, 'Should not throw an exception');
+        bCaughtException := false;
+        try
+          LoadRecords('ARMO');
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitializeMXPF before calling LoadRecords', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
         Pass;
       except 
-        on x: Exception Fail(x);
+        on x: Exception do Fail(x);
       end;
       
       // Test with mxPatchFile not assigned
@@ -554,8 +602,16 @@ begin
       // Test with MXPF not initialized
       Describe('MXPF not initialized');
       try
-        LoadRecords('ARMO');
-        ExpectEqual(MaxRecordIndex, -1, 'Should return -1');
+        bCaughtException := false;
+        try
+          MaxRecordIndex;
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitialzeMXPF before calling MaxRecordIndex', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
         Pass;
       except 
         on x: Exception do Fail(x);
@@ -588,9 +644,16 @@ begin
       // Test with MXPF not initialized
       Describe('MXPF not initialized');
       try
-        rec := GetRecord(0);
-        Expect(true, 'Should not throw an exception');
-        Expect(not Assigned(rec), 'Should return nil');
+        bCaughtException := false;
+        try
+          rec := GetRecord(0);
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitialzeMXPF before calling LoadRecords', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
         Pass;
       except 
         on x: Exception do Fail(x);
@@ -599,10 +662,17 @@ begin
       // Test with LoadRecords not called
       Describe('LoadRecords not called');
       try
-        InitializeMXPF;
-        rec := GetRecord(0);
-        Expect(true, 'Should not throw an exception');
-        Expect(not Assigned(rec), 'Should return nil');
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          GetRecord(0);
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call LoadRecords before you can access records using GetRecord', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
         FinalizeMXPF;
         Pass;
       except 
@@ -612,15 +682,22 @@ begin
         end;
       end;
       
-      // Test with mxRecords.Count = 0
-      Describe('mxRecords.Count = 0');
+      // Test with no records loaded
+      Describe('No records loaded');
       try
-        InitializeMXPF;
-        SetExclusions('Skyrim.esm');
-        LoadRecords('SLGM');
-        rec := GetRecord(0);
-        Expect(true, 'Should not throw an exception');
-        Expect(not Assigned(rec), 'Should return nil');
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          SetExclusions('Skyrim.esm');
+          LoadRecords('SLGM');
+          GetRecord(0);
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: Can''t call GetRecord, no records available', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
         FinalizeMXPF;
         Pass;
       except 
@@ -640,14 +717,13 @@ begin
           GetRecord(-1);
         except 
           on x: Exception do begin
-            ExpectEqual(x.Message, 'Index out of bounds!', 
-              'Should raise an index out of bounds exception');
             bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: GetRecord index out of bounds', 
+              'Should raise the correct exception');
           end;
         end;
         // if no exception caught, fail test
-        if not bCaughtException then
-          Expect(false, 'Should raise an index out of bounds exception');
+        Expect(bCaughtException, 'Should have raised an exception');
         FinalizeMXPF;
         Pass;
       except
@@ -686,8 +762,16 @@ begin
       // Test with MXPF not initialized
       Describe('MXPF not initialized');
       try
-        RemoveRecord(0);
-        Expect(true, 'Should not throw an exception');
+        bCaughtException := false;
+        try
+          RemoveRecord(0);
+        except 
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitialzeMXPF before calling RemoveRecord', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
         Pass;
       except 
         on x: Exception do Fail(x);
@@ -696,9 +780,17 @@ begin
       // Test with LoadRecords not called
       Describe('LoadRecords not called');
       try
-        InitializeMXPF;
-        RemoveRecord(0);
-        Expect(true, 'Should not throw an exception');
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          RemoveRecord(0);
+        except 
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call LoadRecords before you can remove records using RemoveRecord', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
         FinalizeMXPF;
         Pass;
       except 
@@ -708,14 +800,22 @@ begin
         end;
       end;
       
-      // Test with mxRecords.Count = 0
-      Describe('mxRecords.Count = 0');
+      // Test with no records loaded
+      Describe('No records loaded');
       try
-        InitializeMXPF;
-        SetExclusions('Skyrim.esm');
-        LoadRecords('SLGM');
-        RemoveRecord(0);
-        Expect(true, 'Should not throw an exception');
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          SetExclusions('Skyrim.esm');
+          LoadRecords('SLGM');
+          RemoveRecord(0);
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: Can''t call RemoveRecord, no records available', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
         FinalizeMXPF;
         Pass;
       except 
@@ -735,14 +835,12 @@ begin
           RemoveRecord(-1);
         except 
           on x: Exception do begin
-            ExpectEqual(x.Message, 'Index out of bounds!', 
-              'Should raise an index out of bounds exception');
             bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: RemoveRecord index out of bounds', 
+              'Should raise the correct exception');
           end;
         end;
-        // if no exception caught, fail test
-        if not bCaughtException then
-          Expect(false, 'Should raise an index out of bounds exception');
+        Expect(bCaughtException, 'Should have raised an exception');
         FinalizeMXPF;
         Pass;
       except
@@ -785,6 +883,131 @@ end;
 
 
 {******************************************************************************}
+{ TEST RECORD PATCHING
+  Tests Record Patching MXPF functions:
+    - AddMastersToPatch
+    - CopyRecordToPatch
+    - CopyRecordsToPatch
+    - MaxPatchRecordIndex
+    - GetPatchRecord
+}
+{******************************************************************************}
+
+procedure TestRecordPatching;
+var
+  bCaughtException: boolean;
+  rec: IInterface;
+  sl: TStringList;
+begin
+   Describe('Record Patching');
+  try
+    Describe('AddMastersToPatch');
+    try
+      // Test with MXPF not initialized
+      Describe('MXPF not initialized');
+      try
+        bCaughtException := false;
+        try
+          AddMastersToPatch;
+        except 
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitialzeMXPF before calling AddMastersToPatch', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Expect(not mxMastersAdded, 'Should not set mxMastersAdded to true');
+        Pass;
+      except 
+        on x: Exception do Fail(x);
+      end;
+      
+      // Test with LoadRecords not called
+      Describe('LoadRecords not called');
+      try
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          AddMastersToPatch;
+        except 
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call LoadRecords before you can call AddMastersToPatch', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Expect(not mxMastersAdded, 'Should not set mxMastersAdded to true');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with mxPatchFile not assigned
+      Describe('mxPatchFile not assigned');
+      try
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          SetExclusions('Skyrim.esm');
+          LoadRecords('ARMO');
+          AddMastersToPatch;
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to assign mxPatchFile using PatchFileByAuthor or PatchFileByName before calling AddMastersToPatch', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Expect(not mxMastersAdded, 'Should not set mxMastersAdded to true');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with mxPatchFile assigned
+      sl := TStringList.Create;
+      Describe('mxPatchFile assigned');
+      try
+        InitializeMXPF;
+        PatchFileByName('TestMXPF-3.esp');
+        LoadRecords('ARMO');
+        AddMastersToPatch;
+        Expect(mxMastersAdded, 'Should set mxMastersAdded to true');
+        GetMasters(mxPatchFile, sl);
+        ExpectEqual(sl.Text, 'Skyrim.esm'#13#10'TestMXPF-1.esp'#13#10'TestMXPF-2.esp'#13#10, 'Should add the correct masters');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      sl.Free;
+      
+      // All tests passed?
+      Pass;
+    except
+      on x: Exception do Fail(x);
+    end;
+    
+    // All tests passed?
+    Pass;
+  except 
+    on x: Exception do Fail(x);
+  end;
+end;
+
+
+{******************************************************************************}
 { ENTRY POINTS
   Entry points for when the script is run in xEdit.
     - Initialize
@@ -808,7 +1031,7 @@ begin
   TestPatchFileSelection;
   TestFileSelection;
   TestRecordProcessing;
-  //TestRecordPatching;
+  TestRecordPatching;
   //TestReporting;
   
   // finalize jvt

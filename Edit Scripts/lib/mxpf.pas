@@ -205,12 +205,9 @@ procedure PatchFileByAuthor(author: string);
 var
   madeNewFile: boolean;
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitializeMXPF before calling PatchFileByAuthor.');
-    exit;
-  end;
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitializeMXPF before calling PatchFileByAuthor');
   
   // select existing file or create new one
   madeNewFile := false;
@@ -235,12 +232,9 @@ procedure PatchFileByName(filename: string);
 var
   madeNewFile: boolean;
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitializeMXPF before calling PatchFileByName.');
-    exit;
-  end;
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitializeMXPF before calling PatchFileByName');
   
   // select existing file or create new one
   madeNewFile := false;
@@ -270,12 +264,9 @@ end;
 //=========================================================================
 procedure SetExclusions(s: string);
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitializeMXPF before calling SetExclusions.');
-    exit;
-  end;
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitializeMXPF before calling SetExclusions');
   
   // set files to string
   mxFileMode := mxExclusionMode;
@@ -291,12 +282,9 @@ end;
 
 procedure SetInclusions(s: string);
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitializeMXPF before calling SetInclusions.');
-    exit;
-  end;
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then 
+    raise Exception.Create('MXPF Error: You need to call InitializeMXPF before calling SetInclusions');
   
   // set files to string
   mxFileMode := mxInclusionMode;
@@ -320,12 +308,9 @@ var
   f, g, e: IInterface;
   filename: string;
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitializeMXPF before calling LoadRecords.');
-    exit;
-  end;
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitializeMXPF before calling LoadRecords');
   
   // set boolean so we know the user called this function
   mxLoadCalled := true;
@@ -466,12 +451,9 @@ var
   f, g, e: IInterface;
   filename: string;
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitializeMXPF before calling LoadRecordsSpecial.');
-    exit;
-  end;
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitializeMXPF before calling LoadChildRecords');
   
   // set boolean so we know the user called this function
   mxLoadCalled := true;
@@ -542,13 +524,9 @@ end;
 
 function MaxRecordIndex: Integer;
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitialzeMXPF before calling MaxRecordIndex');
-    Result := -1;
-    exit;
-  end;
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitialzeMXPF before calling MaxRecordIndex');
   
   // return value if checks pass
   Result := mxRecords.Count - 1;
@@ -557,28 +535,18 @@ end;
 
 function GetRecord(i: integer): IInterface;
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitialzeMXPF before calling LoadRecords');
-    exit;
-  end;
-  // if user hasn't loaded records, show error message and exit
-  if not mxLoadCalled then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call LoadRecords before you can access records using GetRecord');
-    exit;
-  end;
-  // if no records available, show error message and exit
-  if mxRecords.Count = 0 then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: Can''t call GetRecord, no records available');
-    exit;
-  end;
-  
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitialzeMXPF before calling LoadRecords');
+  // if user hasn't loaded records, raise exception
+  if not mxLoadCalled then
+    raise Exception.Create('MXPF Error: You need to call LoadRecords before you can access records using GetRecord');
+  // if no records available, raise exception
+  if mxRecords.Count = 0 then
+    raise Exception.Create('MXPF Error: Can''t call GetRecord, no records available');
   // if index is out of bounds, raise an exception
   if (i < 0) or (i > MaxRecordIndex) then
-    raise Exception.Create('Index out of bounds!');
+    raise Exception.Create('MXPF Error: GetRecord index out of bounds');
   
   // if all checks pass, return record at user specified index
   Result := ObjectToElement(mxRecords[i]);
@@ -589,28 +557,18 @@ procedure RemoveRecord(i: integer);
 var
   n: string;
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitialzeMXPF before calling RemoveRecord');
-    exit;
-  end;
-  // if user hasn't loaded records, show error message and exit
-  if not mxLoadCalled then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call LoadRecords before you can access records using RemoveRecord');
-    exit;
-  end;
-  // if no records available, show error message and exit
-  if mxRecords.Count = 0 then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: Can''t call RemoveRecord, no records available');
-    exit;
-  end;
-  
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitialzeMXPF before calling RemoveRecord');
+  // if user hasn't loaded records, raise exception
+  if not mxLoadCalled then
+    raise Exception.Create('MXPF Error: You need to call LoadRecords before you can remove records using RemoveRecord');
+  // if no records available, raise exception
+  if mxRecords.Count = 0 then
+    raise Exception.Create('MXPF Error: Can''t call RemoveRecord, no records available');
   // if index is out of bounds, raise an exception
   if (i < 0) or (i > MaxRecordIndex) then
-    raise Exception.Create('Index out of bounds!');
+    raise Exception.Create('MXPF Error: RemoveRecord index out of bounds');
   
   // if all checks pass, remove record at user specified index
   n := Name(ObjectToElement(mxRecords[i]));
@@ -623,25 +581,22 @@ end;
 //=========================================================================
 procedure AddMastersToPatch;
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitialzeMXPF before calling AddMastersToPatch');
-    exit;
-  end;
-  // if user hasn't loaded records, show error message and exit
-  if not mxLoadCalled then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call LoadRecords before you can call AddMastersToPatch');
-    exit;
-  end;
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitialzeMXPF before calling AddMastersToPatch');
+  // if user hasn't loaded records, raise exception
+  if not mxLoadCalled then
+    raise Exception.Create('MXPF Error: You need to call LoadRecords before you can call AddMastersToPatch');
+  // if user hasn't assigned a patch file, raise exception
+  if not Assigned(mxPatchFile) then
+    raise Exception.Create('MXPF Error: You need to assign mxPatchFile using PatchFileByAuthor or PatchFileByName before calling AddMastersToPatch');
   
   // add masters to mxPatchFile
   AddMastersToFile(mxPatchFile, mxMasters, true);
   mxMastersAdded := true;
   if mxDebug then begin
     DebugMessage('MXPF: Added masters to patch file.');
-    DebugList(mxMasters);
+    DebugList(mxMasters, '  ');
   end;
 end;
 
@@ -649,24 +604,18 @@ function CopyRecordToPatch(i: integer): IInterface;
 var
   rec: IInterface;
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitialzeMXPF before calling CopyRecordToPatch');
-    exit;
-  end;
-  // if user hasn't loaded records, show error message and exit
-  if not mxLoadCalled then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call LoadRecords before you can copy records using CopyRecordToPatch');
-    exit;
-  end;
-  // if no records available, show error message and exit
-  if mxRecords.Count = 0 then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: Can''t call CopyRecordToPatch, no records available');
-    exit;
-  end;
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitialzeMXPF before calling CopyRecordToPatch');
+  // if user hasn't loaded records, raise exception
+  if not mxLoadCalled then
+    raise Exception.Create('MXPF Error: You need to call LoadRecords before you can copy records using CopyRecordToPatch');
+  // if no records available, raise exception
+  if mxRecords.Count = 0 then
+    raise Exception.Create('MXPF Error: Can''t call CopyRecordToPatch, no records available');
+  // if index is out of bounds, raise an exception
+  if (i < 0) or (i > MaxRecordIndex) then
+    raise Exception.Create('MXPF Error: CopyRecordToPatch index out of bounds');
   
   // set boolean so we know the user called this function
   mxCopyCalled := true;
@@ -697,24 +646,15 @@ var
   start: TDateTime;
   rec, patchRec: IInterface;
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitialzeMXPF before calling CopyRecordsToPatch');
-    exit;
-  end;
-  // if user hasn't loaded records, show error message and exit
-  if not mxLoadCalled then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call LoadRecords before you can copy records using CopyRecordsToPatch');
-    exit;
-  end;
-  // if no records available, show error message and exit
-  if mxRecords.Count = 0 then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: Can''t call CopyRecordsToPatch, no records available');
-    exit;
-  end;
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitialzeMXPF before calling CopyRecordsToPatch');
+  // if user hasn't loaded records, raise exception
+  if not mxLoadCalled then
+    raise Exception.Create('MXPF Error: You need to call LoadRecords before you can copy records using CopyRecordsToPatch');
+  // if no records available, raise exception
+  if mxRecords.Count = 0 then
+    raise Exception.Create('MXPF Error: Can''t call CopyRecordsToPatch, no records available');
   
   // set boolean so we know the user called this function
   mxCopyCalled := true;
@@ -756,12 +696,9 @@ end;
 
 function MaxPatchRecordIndex: Integer;
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitialzeMXPF before calling MaxPatchRecordIndex');
-    exit;
-  end;
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitialzeMXPF before calling MaxPatchRecordIndex');
   
   // return value if checks pass
   Result := mxPatchRecords.Count - 1;
@@ -770,28 +707,18 @@ end;
 
 function GetPatchRecord(i: Integer): IInterface;
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitialzeMXPF before calling GetPatchRecord');
-    exit;
-  end;
-  // if user hasn't loaded records, show error message and exit
-  if not mxCopyCalled then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call CopyRecordsToPatch or CopyRecordToPatch before you can access records using GetPatchRecord');
-    exit;
-  end;
-  // if no records available, show error message and exit
-  if mxPatchRecords.Count = 0 then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: Can''t call GetPatchRecord, no records available');
-    exit;
-  end;
-  
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitialzeMXPF before calling GetPatchRecord');
+  // if user hasn't loaded records, raise exception
+  if not mxCopyCalled then
+    raise Exception.Create('MXPF Error: You need to call CopyRecordsToPatch or CopyRecordToPatch before you can access records using GetPatchRecord');
+  // if no records available, raise exception
+  if mxPatchRecords.Count = 0 then 
+    raise Exception.Create('MXPF Error: Can''t call GetPatchRecord, no records available');
   // if index is out of bounds, raise an exception
   if (i < 0) or (i > MaxPatchRecordIndex) then
-    raise Exception.Create('Index out of bounds!');
+    raise Exception.Create('MXPF Error: GetPatchRecord index out of bounds');
   
   // if all checks pass, return record at user specified index
   Result := ObjectToElement(mxPatchRecords[i]);
@@ -805,12 +732,9 @@ procedure PrintMXPFReport;
 var
   success, failure, total: Integer;
 begin
-  // if user hasn't initialized MXPF, show error message and exit
-  if not mxInitialized then begin
-    if not mxHideErrorPopups then 
-      ShowMessage('MXPF Error: You need to call InitialzeMXPF before calling PrintMXPFReport');
-    exit;
-  end;
+  // if user hasn't initialized MXPF, raise exception
+  if not mxInitialized then
+    raise Exception.Create('MXPF Error: You need to call InitialzeMXPF before calling PrintMXPFReport');
   
   // print report
   AddMessage(' ');
