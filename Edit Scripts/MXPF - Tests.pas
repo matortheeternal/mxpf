@@ -19,13 +19,13 @@ begin
     Describe('InitializeMXPF');
     try
       InitializeMXPF;
-      Expect(mxInitialized, 'mxInitialized should be true');
-      Expect(Assigned(mxDebugMessages), 'mxDebugMessages should be created');
-      Expect(Assigned(mxFailureMessages), 'mxFailureMessages should be created');
-      Expect(Assigned(mxMasters), 'mxMasters should be created');
-      Expect(Assigned(mxFiles), 'mxFiles should be created');
-      Expect(Assigned(mxRecords), 'mxRecords should be created');
-      Expect(Assigned(mxPatchRecords), 'mxPatchRecords should be created');
+      Expect(mxInitialized, 'Should set mxInitialized to true');
+      Expect(Assigned(mxDebugMessages), 'Should create mxDebugMessages');
+      Expect(Assigned(mxFailureMessages), 'Should create mxFailureMessages');
+      Expect(Assigned(mxMasters), 'Should create mxMasters');
+      Expect(Assigned(mxFiles), 'Should create mxFiles');
+      Expect(Assigned(mxRecords), 'Should create mxRecords');
+      Expect(Assigned(mxPatchRecords), 'Should create mxPatchRecords');
       Pass;
     except 
       on x: Exception do Fail(x);
@@ -34,8 +34,9 @@ begin
     Describe('DefaultOptionsMXPF');
     try
       DefaultOptionsMXPF;
-      Expect(mxLoadMasterRecords, 'mxLoadMasterRecords should be true');
-      Expect(mxCopyWinningOverrides, 'mxCopyWinningOverrides should be true');
+      Expect(mxLoadMasterRecords, 'Should set mxLoadMasterRecords to true');
+      Expect(mxSkipPatchedRecords, 'Should set mxSkipPatchedRecords to true');
+      Expect(mxCopyWinningOverrides, 'Should set mxCopyWinningOverrides to true');
       Pass;
     except 
       on x: Exception do Fail(x);
@@ -44,21 +45,21 @@ begin
     Describe('FinalizeMXPF');
     try
       FinalizeMXPF;
-      Expect(not mxInitialized, 'mxInitialized should be false');
-      Expect(not mxLoadCalled, 'mxLoadCalled should be false');
-      Expect(not mxCopyCalled, 'mxCopyCalled should be false');
-      Expect(not mxLoadMasterRecords, 'mxLoadMasterRecords should be false');
-      Expect(not mxLoadOverrideRecords, 'mxLoadOverrideRecords should be false');
-      Expect(not mxCopyWinningOverrides, 'mxCopyWinningOverrides should be false');
-      ExpectEqual(mxFileMode, 0, 'mxFileMode should be 0');
-      ExpectEqual(mxRecordsCopied, 0, 'mxRecordsCopied should be 0');
-      Expect(not Assigned(mxPatchFile), 'mxPatchFile should be unassigned');
-      Expect(not Assigned(mxDebugMessages), 'mxDebugMessages should be freed');
-      Expect(not Assigned(mxFailureMessages), 'mxFailureMessages should be freed');
-      Expect(not Assigned(mxFiles), 'mxFiles should be freed');
-      Expect(not Assigned(mxMasters), 'mxMasters should be freed');
-      Expect(not Assigned(mxRecords), 'mxRecords should be freed');
-      Expect(not Assigned(mxPatchRecords), 'mxPatchRecords should be freed');
+      Expect(not mxInitialized, 'Should set mxInitialized to false');
+      Expect(not mxLoadCalled, 'Should set mxLoadCalled to false');
+      Expect(not mxCopyCalled, 'Should set mxCopyCalled to false');
+      Expect(not mxLoadMasterRecords, 'Should set mxLoadMasterRecords to false');
+      Expect(not mxLoadOverrideRecords, 'Should set mxLoadOverrideRecords to false');
+      Expect(not mxCopyWinningOverrides, 'Should set mxCopyWinningOverrides to false');
+      ExpectEqual(mxFileMode, 0, 'Should set mxFileMode to 0');
+      ExpectEqual(mxRecordsCopied, 0, 'Should set mxRecordsCopied to 0');
+      Expect(not Assigned(mxPatchFile), 'Should set mxPatchFile to nil');
+      Expect(not Assigned(mxDebugMessages), 'Should free mxDebugMessages');
+      Expect(not Assigned(mxFailureMessages), 'Should free mxFailureMessages');
+      Expect(not Assigned(mxFiles), 'Should free mxFiles');
+      Expect(not Assigned(mxMasters), 'Should free mxMasters');
+      Expect(not Assigned(mxRecords), 'Should free mxRecords');
+      Expect(not Assigned(mxPatchRecords), 'Should free mxPatchRecords');
       Pass;
     except 
       on x: Exception do Fail(x);
@@ -896,9 +897,10 @@ end;
 procedure TestRecordPatching;
 var
   bCaughtException: boolean;
-  rec: IInterface;
+  rec, g: IInterface;
   s: string;
   sl: TStringList;
+  count: Integer; 
 begin
    Describe('Record Patching');
   try
@@ -1209,6 +1211,178 @@ begin
       on x: Exception do Fail(x);
     end;
     
+    Describe('CopyRecordsToPatch');
+    try
+      // Test with MXPF not initialized
+      Describe('MXPF not initialized');
+      try
+        bCaughtException := false;
+        try
+          CopyRecordsToPatch;
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitialzeMXPF before calling CopyRecordsToPatch', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Expect(not mxCopyCalled, 'Should not set mxCopyCalled to true');
+        Pass;
+      except
+        on x: Exception do Fail(x);
+      end;
+      
+      // Test with LoadRecords not called
+      Describe('LoadRecords not called');
+      try
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          CopyRecordsToPatch;
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call LoadRecords before you can copy records using CopyRecordsToPatch', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Expect(not mxCopyCalled, 'Should not set mxCopyCalled to true');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do Fail(x);
+      end;
+      
+      // Test with mxPatchFile not assigned
+      Describe('mxPatchFile not assigned');
+      try
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          LoadRecords('ARMO');
+          CopyRecordsToPatch;
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to assign mxPatchFile using PatchFileByAuthor or PatchFileByName before calling CopyRecordsToPatch', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Expect(not mxCopyCalled, 'Should not set mxCopyCalled to true');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with no records
+      Describe('No records');
+      try
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          SetExclusions('Skyrim.esm');
+          PatchFileByName('TestMXPF-2.esp');
+          LoadRecords('SLGM');
+          CopyRecordsToPatch;
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: Can''t call CopyRecordsToPatch, no records available', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Expect(not mxCopyCalled, 'Should not set mxCopyCalled to true');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with records available
+      Describe('mxSkipPatchedRecords');
+      try
+        InitializeMXPF;
+        mxSkipPatchedRecords := true;
+        SetExclusions('Skyrim.esm');
+        PatchFileByName('TestMXPF-3.esp');
+        LoadRecords('ARMO');
+        CopyRecordsToPatch;
+        g := GroupBySignature(mxPatchFile, 'ARMO');
+        count := ElementCount(g);
+        Remove(g);
+        Expect(mxCopyCalled, 'Should set mxCopyCalled to true');
+        Expect(mxMastersAdded, 'Should set mxMastersAdded to true');
+        ExpectEqual(mxPatchRecords.Count, 21, 'Should add the records to mxPatchRecords');
+        ExpectEqual(count, 21, 'Should copy the records to the patch file');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // all tests passed?
+      Pass;
+    except
+      on x: Exception do Fail(x);
+    end;
+    
+    Describe('MaxPatchRecordIndex');
+    try
+      // Test with MXPF not initialized
+      Describe('MXPF not initialized');
+      try
+        bCaughtException := false;
+        try
+          MaxPatchRecordIndex;
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitialzeMXPF before calling MaxPatchRecordIndex', 'Should raise the correct exception.');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Pass;
+      except
+        on x: Exception do Fail(x);
+      end;
+      
+      // Test with MXPF initialized
+      Describe('MXPF initialized');
+      try
+        InitializeMXPF;
+        mxSkipPatchedRecords := true;
+        SetExclusions('Skyrim.esm');
+        PatchFileByName('TestMXPF-3.esp');
+        LoadRecords('ARMO');
+        CopyRecordsToPatch;
+        g := GroupBySignature(mxPatchFile, 'ARMO');
+        Remove(g);
+        ExpectEqual(MaxPatchRecordIndex, mxPatchRecords.Count - 1, 'Should return mxPatchRecords.Count - 1');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // All tests passed?
+      Pass;
+    except
+      on x: Exception do Fail(x);
+    end;
+    
     // All tests passed?
     Pass;
   except 
@@ -1244,6 +1418,7 @@ begin
   //TestReporting;
   
   // finalize jvt
+  jvtPrintReport;
   jvtFinalize;
 end;
 

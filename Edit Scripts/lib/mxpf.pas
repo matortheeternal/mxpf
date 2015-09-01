@@ -157,6 +157,7 @@ end;
 procedure DefaultOptionsMXPF;
 begin
   mxLoadMasterRecords := true;
+  mxSkipPatchedRecords := true;
   mxCopyWinningOverrides := true;
 end;
 
@@ -662,6 +663,9 @@ begin
   // if user hasn't loaded records, raise exception
   if not mxLoadCalled then
     raise Exception.Create('MXPF Error: You need to call LoadRecords before you can copy records using CopyRecordsToPatch');
+  // if user hasn't assigned a patch file, raise exception
+  if not Assigned(mxPatchFile) then
+    raise Exception.Create('MXPF Error: You need to assign mxPatchFile using PatchFileByAuthor or PatchFileByName before calling CopyRecordsToPatch');
   // if no records available, raise exception
   if mxRecords.Count = 0 then
     raise Exception.Create('MXPF Error: Can''t call CopyRecordsToPatch, no records available');
@@ -677,10 +681,10 @@ begin
   // if all checks pass, loop through records list
   for i := 0 to Pred(mxRecords.Count) do begin
     rec := ObjectToElement(mxRecords[i]);
-    if mxCopyWinningOverrides then rec := WinningOverrideBefore(mxPatchFile, rec);
+    if mxCopyWinningOverrides then rec := WinningOverrideBefore(rec, mxPatchFile);
     // record already in patch
-    if mxSkipPatchedRecords and OverrideExistsIn(mxPatchFile, rec) then begin
-      DebugMessage('Skipping record %s, already in patch!', [Name(rec)]);
+    if mxSkipPatchedRecords and OverrideExistsIn(rec, mxPatchFile) then begin
+      DebugMessage(Format('Skipping record %s, already in patch!', [Name(rec)]));
       continue;
     end;
     
