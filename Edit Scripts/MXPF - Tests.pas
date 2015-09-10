@@ -898,7 +898,7 @@ procedure TestRecordPatching;
 var
   bCaughtException: boolean;
   rec, g: IInterface;
-  s: string;
+  s, fn: string;
   sl: TStringList;
   count: Integer; 
 begin
@@ -1382,6 +1382,115 @@ begin
     except
       on x: Exception do Fail(x);
     end;
+    
+    Describe('GetPatchRecord');
+    try
+      // Test with MXPF not initialized
+      Describe('MXPF not initialized');
+      try
+        bCaughtException := false;
+        try
+          GetPatchRecord(0);
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitialzeMXPF before calling GetPatchRecord', 'Should raise the correct exception.');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Pass;
+      except
+        on x: Exception do Fail(x);
+      end;
+      
+      // Test with CopyRecord(s)ToPatch not called
+      Describe('CopyRecord(s)ToPatch not called');
+      try
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          mxSkipPatchedRecords := true;
+          SetExclusions('Skyrim.esm');
+          PatchFileByName('TestMXPF-3.esp');
+          LoadRecords('ARMO');
+          GetPatchRecord(0);
+        except 
+          on x : Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call CopyRecordsToPatch or CopyRecordToPatch before you can access records using GetPatchRecord', 'Should raise the correct exception.');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with an invalid index
+      Describe('Invalid index');
+      try
+        bCaughtException := false;
+        try
+          InitializeMXPF;
+          mxSkipPatchedRecords := true;
+          SetExclusions('Skyrim.esm');
+          PatchFileByName('TestMXPF-3.esp');
+          LoadRecords('ARMO');
+          CopyRecordsToPatch;
+          GetPatchRecord(-1);
+        except 
+          on x : Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: GetPatchRecord index out of bounds', 'Should raise the correct exception.');
+          end;
+        end;
+        g := GroupBySignature(mxPatchFile, 'ARMO');
+        Remove(g);
+        Expect(bCaughtException, 'Should have raised an exception');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with an invalid index
+      Describe('Valid index');
+      try
+        InitializeMXPF;
+        mxSkipPatchedRecords := true;
+        SetExclusions('Skyrim.esm');
+        PatchFileByName('TestMXPF-3.esp');
+        LoadRecords('ARMO');
+        CopyRecordsToPatch;
+        rec := GetPatchRecord(0);
+        s := Name(rec);
+        fn := GetFileName(GetFile(rec));
+        g := GroupBySignature(mxPatchFile, 'ARMO');
+        Remove(g);
+        ExpectEqual(s, 'ArmorIronGauntlets "Iron Gauntlets" [ARMO:00012E46]', 'Should return the correct record');
+        ExpectEqual(fn, 'TestMXPF-3.esp', 'Should return record from the patch file.');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // All tests passed?
+      Pass;
+    except
+      on x: Exception do Fail(x);
+    end;
+
     
     // All tests passed?
     Pass;

@@ -727,9 +727,6 @@ begin
   // if user hasn't loaded records, raise exception
   if not mxCopyCalled then
     raise Exception.Create('MXPF Error: You need to call CopyRecordsToPatch or CopyRecordToPatch before you can access records using GetPatchRecord');
-  // if no records available, raise exception
-  if mxPatchRecords.Count = 0 then 
-    raise Exception.Create('MXPF Error: Can''t call GetPatchRecord, no records available');
   // if index is out of bounds, raise an exception
   if (i < 0) or (i > MaxPatchRecordIndex) then
     raise Exception.Create('MXPF Error: GetPatchRecord index out of bounds');
