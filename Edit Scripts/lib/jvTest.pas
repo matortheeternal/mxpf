@@ -24,7 +24,11 @@ var
   jvtMaxLevel, jvtTestsFailed, jvtTestsPassed, jvtSpecsFailed, jvtSpecsPassed: Integer;
   jvtInitialized: boolean;
   jvtLog, jvtFailures, jvtStack, jvtStackTrace: TStringList;
+
   
+//=========================================================================
+// LOG MESSAGES
+//=========================================================================
 procedure jvtLogMessage(msg: string);
 begin
   jvtLog.Add(msg);
@@ -36,7 +40,7 @@ var
   tab: string;
 begin
   tab := StringOfChar(' ', jvtTabSize * jvtStack.Count);
-  jvtLog.Add(tab + msg);
+  jvtLogMessage(tab + msg);
 end;
 
 procedure jvtSaveLogMessages;
@@ -58,7 +62,11 @@ begin
   if (jvtLog.Count = 0) then exit;
   AddMessage(jvtLog.Text);
 end;
+
   
+//=========================================================================
+// GENERAL
+//=========================================================================
 procedure jvtInitialize;
 begin
   jvtInitialized := true;
@@ -73,6 +81,16 @@ begin
   jvtStackTrace := TStringList.Create;
   jvtLogMessage('JVT initialized at '+TimeToStr(Now));
   jvtLogMessage(' ');
+end;
+
+procedure jvtPush(var sl: TStringList; s: string);
+begin
+  sl.Add(s);
+end;
+
+procedure jvtPop(var sl: TStringList);
+begin
+  sl.Delete(Pred(sl.Count));
 end;
 
 function jvtGetStackTrace: string;
@@ -122,20 +140,14 @@ begin
   jvtLog.Free;
 end;
 
-procedure Push(var sl: TStringList; s: string);
-begin
-  sl.Add(s);
-end;
 
-procedure Pop(var sl: TStringList);
-begin
-  sl.Delete(Pred(sl.Count));
-end;
-
+//=========================================================================
+// TESTING
+//=========================================================================
 procedure Describe(name: string);
 begin
   jvtLogTest(name);
-  Push(jvtStack, name);
+  jvtPush(jvtStack, name);
 end;
 
 procedure Pass;
@@ -153,7 +165,7 @@ begin
     jvtLogMessage(' ');
   end;
   Inc(jvtTestsPassed);
-  Pop(jvtStack);
+  jvtPop(jvtStack);
 end;
 
 procedure Fail(x: Exception);
@@ -169,7 +181,7 @@ begin
   trace := jvtGetStackTrace();
   if not jvtHasTrace(trace) then
     jvtStackTrace.Add(Format('%s >> %s', [trace, fail]));
-  Pop(jvtStack);
+  jvtPop(jvtStack);
   jvtFailures.Add(IntToStr(jvtStack.Count));
 end;
 
@@ -187,8 +199,8 @@ procedure ExpectEqual(v1, v2: Variant; test: string);
 const
   varInteger = 3;
   varDouble = 5;
-  varString =  256;
-  varUString = 258;
+  varString =  256; { Pascal string }
+  varUString = 258; { Unicode string }
 var
   vt: Integer;
 begin
@@ -206,6 +218,10 @@ begin
   Inc(jvtSpecsPassed);
 end;
 
+
+//=========================================================================
+// REPORTING
+//=========================================================================
 procedure jvtPrintReport;
 var
   totalTests, totalSpecs, i: Integer;
