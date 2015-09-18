@@ -1524,7 +1524,6 @@ begin
   TestFileSelection;
   TestRecordProcessing;
   TestRecordPatching;
-  //TestReporting;
   
   // finalize jvt
   jvtPrintReport;

@@ -12,7 +12,7 @@ begin
   files := TStringList.Create;
   
   // get user file selection
-  MultiFileSelect(files);
+  MultiFileSelect(files, 'Select the files you want to load Female NPCs from');
   InitializeMXPF;
   DefaultOptionsMXPF;
   SetInclusions(files.CommaText);
