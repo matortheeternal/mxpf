@@ -199,8 +199,11 @@ procedure ExpectEqual(v1, v2: Variant; test: string);
 const
   varInteger = 3;
   varDouble = 5;
+  varShortInt = 16;
   varString =  256; { Pascal string }
   varUString = 258; { Unicode string }
+  { SEE http://stackoverflow.com/questions/24731098/what-does-mean-vartypeavariant-273-or-111
+    for more }
 var
   vt: Integer;
 begin
@@ -210,6 +213,7 @@ begin
     vt := VarType(v1);
     case vt of
       varInteger: raise Exception.Create(Format('Expected "%d", found "%d"', [v2, v1]));
+      varShortInt: raise Exception.Create(Format('Expected "%d", found "%d"', [Integer(v2), Integer(v1)]));
       varDouble: raise Exception.Create(Format('Expected "%0.4f", found "%0.4f"', [v2, v1]));
       varString, varUString: raise Exception.Create(Format('Expected "%s", found "%s"', [v2, v1]));
       else raise Exception.Create(test + ', type ' + IntToStr(vt));

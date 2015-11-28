@@ -1,6 +1,6 @@
 {
   matortheeternal's Functions
-  edited 8/28/2015
+  edited 11/12/2015
   
   A set of useful functions for use in TES5Edit scripts.
   
@@ -1113,21 +1113,23 @@ var
   i, targetLoadOrder: Integer;
   ovr, previousOvr, ovrFile: IInterface;
 begin
-  Result := nil;
   e := MasterOrSelf(e);
+  Result := e;
+  if OverrideCount(e) = 0 then
+    exit;
+  
+  // find previous override
   previousOvr := e;
   targetLoadOrder := GetLoadOrder(f);
   for i := 0 to Pred(OverrideCount(e)) do begin
     ovr := OverrideByIndex(e, i);
     ovrFile := GetFile(ovr);
-    if GetLoadOrder(GetFile(ovr)) >= targetLoadOrder then begin
+    if GetLoadOrder(ovrFile) >= targetLoadOrder then begin
       Result := previousOvr;
       break;
     end;
     previousOvr := ovr;
   end;
-  if not Assigned(Result) then
-    Result := ovr;
 end;
 
 {

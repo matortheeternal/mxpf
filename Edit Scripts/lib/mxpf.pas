@@ -531,7 +531,7 @@ begin
   
   // return value if checks pass
   Result := mxRecords.Count - 1;
-  if mxDebug then DebugMessage(Format('MXPF: MaxRecordIndex returned %d', [Result]));
+  if mxDebugVerbose then DebugMessage(Format('MXPF: MaxRecordIndex returned %d', [Result]));
 end;
 
 function GetRecord(i: integer): IInterface;
@@ -681,7 +681,15 @@ begin
   // if all checks pass, loop through records list
   for i := 0 to Pred(mxRecords.Count) do begin
     rec := ObjectToElement(mxRecords[i]);
-    if mxCopyWinningOverrides then rec := WinningOverrideBefore(rec, mxPatchFile);
+    if mxCopyWinningOverrides then 
+      rec := WinningOverrideBefore(rec, mxPatchFile);
+    
+    // winningOverrideBefore failed
+    if not Assigned(rec) then begin
+      FailureMessage(Format('Failed to copy record %s, WinningOverrideBefore failure', [Name(rec)]));
+      continue;
+    end;
+    
     // record already in patch
     if mxSkipPatchedRecords and OverrideExistsIn(rec, mxPatchFile) then begin
       DebugMessage(Format('Skipping record %s, already in patch!', [Name(rec)]));
@@ -691,6 +699,8 @@ begin
     // try copying the record
     try
       patchRec := wbCopyElementToFile(rec, mxPatchFile, false, true);
+      if not Assigned(patchRec) then
+        raise Exception.Create('patchRec not assigned');
       mxPatchRecords.Add(TObject(patchRec));
       if mxDebug then DebugMessage(Format('Copied record %s to patch file', [Name(patchRec)]));
     except on x: Exception do
