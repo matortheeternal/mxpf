@@ -1111,24 +1111,22 @@ end;
 function WinningOverrideBefore(e, f: IInterface): IInterface;
 var
   i, targetLoadOrder: Integer;
-  ovr, previousOvr, ovrFile: IInterface;
+  mst, ovr, ovrFile: IInterface;
 begin
-  e := MasterOrSelf(e);
   Result := e;
-  if OverrideCount(e) = 0 then
+  mst := MasterOrSelf(e);
+  if OverrideCount(mst) = 0 then
     exit;
   
   // find previous override
-  previousOvr := e;
+  Result := mst;
   targetLoadOrder := GetLoadOrder(f);
-  for i := 0 to Pred(OverrideCount(e)) do begin
-    ovr := OverrideByIndex(e, i);
+  for i := 0 to Pred(OverrideCount(mst)) do begin
+    ovr := OverrideByIndex(mst, i);
     ovrFile := GetFile(ovr);
-    if GetLoadOrder(ovrFile) >= targetLoadOrder then begin
-      Result := previousOvr;
+    if GetLoadOrder(ovrFile) >= targetLoadOrder then
       break;
-    end;
-    previousOvr := ovr;
+    Result := ovr;
   end;
 end;
 
