@@ -1,9 +1,6 @@
 {
   Mator's xEdit Patching Framework
   by matortheeternal
-  
-  TODO:
-  - Handle special record cases of dialog topics and children of cells and worldspaces
 }
 
 unit mxpf;
@@ -156,6 +153,7 @@ end;
 
 procedure DefaultOptionsMXPF;
 begin
+  mxLoadMasterRecords := true;
   mxSkipPatchedRecords := true;
   mxLoadWinningOverrides := true;
 end;

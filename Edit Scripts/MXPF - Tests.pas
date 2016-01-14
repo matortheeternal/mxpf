@@ -34,6 +34,7 @@ begin
     Describe('DefaultOptionsMXPF');
     try
       DefaultOptionsMXPF;
+      Expect(mxLoadMasterRecords, 'Should set mxLoadMasterRecords to true');
       Expect(mxSkipPatchedRecords, 'Should set mxSkipPatchedRecords to true');
       Expect(mxLoadWinningOverrides, 'Should set mxLoadWinningOverrides to true');
       Pass;
