@@ -26,7 +26,7 @@ const
   
   { DEVELOPER CONSTANTS - DON'T CHANGE }
   // version constant
-  mxVersion = '0.1.0';
+  mxVersion = '0.2.0';
   
   // mode constants
   mxExclusionMode = 1;
@@ -369,29 +369,32 @@ begin
       
       // if restricted to master records only, skip if not master record
       if mxLoadMasterRecords and not IsMaster(rec) then begin
-        if mxDebug and mxDebugVerbose then DebugMessage('    Skipping override record '+Name(rec));
+        if mxDebug and mxDebugVerbose then DebugMessage('   Skipping override record '+Name(rec));
         continue;
       end;
       
       // if restricted to override records only, skip if not override record
       if mxLoadOverrideRecords and IsMaster(rec) then begin
-        if mxDebug and mxDebugVerbose then DebugMessage('    Skipping master record '+Name(rec));
+        if mxDebug and mxDebugVerbose then DebugMessage('   Skipping master record '+Name(rec));
         continue;
       end;
       
       // if loading winning override records, get winning override
-      if mxLoadWinningOverrides then try
-        rec := WinningOverrideBefore(rec, mxPatchFile);
-        if mxDebug and mxDebugVerbose then DebugMessage('    Loading winning override from '+GetFileName(GetFile(rec)));
-      except
-        on x: Exception do begin
-          DebugMessage('    Exception getting winning override for '+Name(rec));
-          continue;
+      if mxLoadWinningOverrides then begin
+        try
+          rec := WinningOverrideBefore(rec, mxPatchFile);
+          if mxDebug and mxDebugVerbose then DebugMessage(Format('   Using override from %s', 
+            [GetFileName(GetFile(rec))]));
+        except
+          on x: Exception do begin
+            DebugMessage('   Exception getting winning override for '+Name(rec));
+            continue;
+          end;
         end;
       end;
       
       // add record to list
-      if mxDebug and mxDebugVerbose then DebugMessage('    Found record '+Name(rec));
+      if mxDebug and mxDebugVerbose then DebugMessage('     Found record '+Name(rec));
       mxRecords.Add(TObject(rec));
       Inc(mxRecordsFound);
     end;
@@ -597,6 +600,7 @@ begin
   if mxDebug then begin
     DebugMessage('MXPF: Added masters to patch file.');
     DebugList(mxMasters, '  ');
+    DebugMessage(' ');
   end;
 end;
 
@@ -672,6 +676,9 @@ begin
   // add masters to patch file if we haven't already
   if not mxMastersAdded then AddMastersToPatch;
   
+  // log message
+  DebugMessage('MXPF: Copying records to patch '+GetFileName(mxPatchfile));
+  
   // if all checks pass, loop through records list
   for i := 0 to Pred(mxRecords.Count) do begin
     rec := ObjectToElement(mxRecords[i]);
@@ -686,7 +693,7 @@ begin
     
     // record already in patch
     if mxSkipPatchedRecords and OverrideExistsIn(rec, mxPatchFile) then begin
-      DebugMessage(Format('Skipping record %s, already in patch!', [Name(rec)]));
+      DebugMessage(Format('  Skipping record %s, already in patch!', [Name(rec)]));
       continue;
     end;
     
@@ -696,7 +703,7 @@ begin
       if not Assigned(patchRec) then
         raise Exception.Create('patchRec not assigned');
       mxPatchRecords.Add(TObject(patchRec));
-      if mxDebug then DebugMessage(Format('Copied record %s to patch file', [Name(patchRec)]));
+      if mxDebug then DebugMessage(Format('  Copied record %s to patch file', [Name(patchRec)]));
     except on x: Exception do
       FailureMessage(Format('Failed to copy record %s, Exception: %s', [Name(rec), x.Message]));
     end;
