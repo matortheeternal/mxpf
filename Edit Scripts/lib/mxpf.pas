@@ -412,55 +412,11 @@ begin
   end;
 end;
 
-procedure RecursiveRecordLoad(g: IInterface; groupSig, sig: string);
-var
-  i: integer;
-  e: IInterface;
-begin
-  if not Assigned(g) then exit;
-  
-  // either recurse into child group of main records or add them to list
-  if ElementType(g) = etMainRecord then begin
-    // if record signature matches CELL or groupSig, use ChildGroup to access
-    // its children elements
-    if (Signature(g) = 'CELL') or (Signature(g) = groupSig) then begin
-      if mxDebug and mxDebugVerbose then DebugMessage('    Searching children of '+Name(g));
-      RecursiveRecordLoad(ChildGroup(g), groupSig, sig);
-    end
-    else begin
-      // if restricted to master records only, skip if not master record
-      if mxLoadMasterRecords and not IsMaster(e) then begin
-        if mxDebug and mxDebugVerbose then DebugMessage('    Skipping override record '+Name(g));
-        continue;
-      end;
-      
-      // if restricted to winning records only, skip if not winning record
-      if mxLoadOverrideRecords and IsMaster(e) then begin
-        if mxDebug and mxDebugVerbose then DebugMessage('    Skipping master record '+Name(g));
-        continue;
-      end;
-      
-      // add record to list
-      if mxDebug and mxDebugVerbose then DebugMessage('    Found record '+Name(g));
-      mxRecords.Add(TObject(g));
-      Inc(mxRecordsFound);
-    end;
-  end
-  // else recurse through elements in group record
-  else begin
-    if mxDebug and mxDebugVerbose then DebugMessage('    Traversing elements in '+Name(g));
-    for i := 0 to Pred(ElementCount(g)) do begin
-      e := ElementByIndex(g, i);
-      RecursiveRecordLoad(e, groupSig, sig);
-    end;
-  end;    
-end;
-
 procedure LoadChildRecords(sig, groupSig: string);
 var
   start: TDateTime;
   i, j: Integer;
-  f, g, e: IInterface;
+  f, g, rec: IInterface;
   filename: string;
 begin
   // if user hasn't initialized MXPF, raise exception
@@ -515,9 +471,42 @@ begin
     // add masters
     AddMastersToList(f, mxMasters);
     
-    mxRecordsFound := 0;
-    // recursively load records from group
-    RecursiveRecordLoad(g, sig);
+    // load records with wbGetSiblingRecords
+    wbGetSiblingRecords(g, sig, false, mxRecords);
+    mxRecordsFound := mxRecords.Count;
+    
+    // filter records
+    if (mxLoadMasterRecords or mxLoadOverrideRecords or mxLoadWinningOverrides) then begin
+      for j := Pred(mxRecords.Count) downto 0 do begin
+        rec := ObjectToElement(mxRecords[j]);
+        
+        // if restricted to master records only, remove if not master record
+        if mxLoadMasterRecords and not IsMaster(rec) then begin
+          if mxDebug and mxDebugVerbose then DebugMessage('    Removing override record '+Name(rec));
+          mxRecords.Delete(j);
+          continue;
+        end;
+        
+        // if restricted to override records only, skip if not override record
+        if mxLoadOverrideRecords and IsMaster(rec) then begin
+          if mxDebug and mxDebugVerbose then DebugMessage('    Removing master record '+Name(rec));
+          mxRecords.Delete(j);
+          continue;
+        end;
+        
+        // if loading winning override records, get winning override
+        if mxLoadWinningOverrides then try
+          mxRecords[j] := TObject(WinningOverrideBefore(rec, mxPatchFile));
+          if mxDebug and mxDebugVerbose then DebugMessage('    Loading winning override from '+GetFileName(GetFile(rec)));
+        except
+          on x: Exception do begin
+            DebugMessage('    Exception getting winning override for '+Name(rec));
+            mxRecords.Delete(j);
+            continue;
+          end;
+        end;
+      end;
+    end;
     
     // print number of records we added to the list
     if mxDebug and not mxDebugVerbose then 
