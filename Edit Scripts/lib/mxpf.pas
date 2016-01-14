@@ -156,7 +156,6 @@ end;
 
 procedure DefaultOptionsMXPF;
 begin
-  mxLoadMasterRecords := true;
   mxSkipPatchedRecords := true;
   mxLoadWinningOverrides := true;
 end;
