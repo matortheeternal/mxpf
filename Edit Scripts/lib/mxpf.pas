@@ -49,7 +49,7 @@ var
   mxRecords, mxPatchRecords: TList;
   mxFileMode, mxRecordsCopied, mxRecordsFound: Integer;
   mxInitialized, mxLoadCalled, mxCopyCalled, mxLoadMasterRecords, 
-  mxLoadOverrideRecords, mxCopyWinningOverrides, mxMastersAdded,
+  mxLoadOverrideRecords, mxLoadWinningOverrides, mxMastersAdded,
   mxSkipPatchedRecords, mxDisallowNewFile, mxDisallowSaving, 
   mxDisallowPrinting: boolean;
   mxPatchFile: IInterface;
@@ -158,7 +158,7 @@ procedure DefaultOptionsMXPF;
 begin
   mxLoadMasterRecords := true;
   mxSkipPatchedRecords := true;
-  mxCopyWinningOverrides := true;
+  mxLoadWinningOverrides := true;
 end;
 
 procedure FinalizeMXPF;
@@ -184,7 +184,7 @@ begin
   mxCopyCalled := false;
   mxLoadMasterRecords := false;
   mxLoadOverrideRecords := false;
-  mxCopyWinningOverrides := false;
+  mxLoadWinningOverrides := false;
   mxFileMode := 0;
   mxRecordsCopied := 0;
   mxPatchFile := nil;
@@ -306,7 +306,7 @@ procedure LoadRecords(sig: string);
 var
   start: TDateTime;
   i, j, n: Integer;
-  f, g, e: IInterface;
+  f, g, rec: IInterface;
   filename: string;
 begin
   // if user hasn't initialized MXPF, raise exception
@@ -366,23 +366,34 @@ begin
     mxRecordsFound := 0;
     // loop through records in group
     for j := 0 to Pred(ElementCount(g)) do begin
-      e := ElementByIndex(g, j);
+      rec := ElementByIndex(g, j);
       
       // if restricted to master records only, skip if not master record
-      if mxLoadMasterRecords and not IsMaster(e) then begin
-        if mxDebug and mxDebugVerbose then DebugMessage('    Skipping override record '+Name(e));
+      if mxLoadMasterRecords and not IsMaster(rec) then begin
+        if mxDebug and mxDebugVerbose then DebugMessage('    Skipping override record '+Name(rec));
         continue;
       end;
       
-      // if restricted to winning records only, skip if not winning record
-      if mxLoadOverrideRecords and IsMaster(e) then begin
-        if mxDebug and mxDebugVerbose then DebugMessage('    Skipping master record '+Name(e));
+      // if restricted to override records only, skip if not override record
+      if mxLoadOverrideRecords and IsMaster(rec) then begin
+        if mxDebug and mxDebugVerbose then DebugMessage('    Skipping master record '+Name(rec));
         continue;
+      end;
+      
+      // if loading winning override records, get winning override
+      if mxLoadWinningOverrides then try
+        rec := WinningOverrideBefore(rec, mxPatchFile);
+        if mxDebug and mxDebugVerbose then DebugMessage('    Loading winning override from '+GetFileName(GetFile(rec)));
+      except
+        on x: Exception do begin
+          DebugMessage('    Exception getting winning override for '+Name(rec));
+          continue;
+        end;
       end;
       
       // add record to list
-      if mxDebug and mxDebugVerbose then DebugMessage('    Found record '+Name(e));
-      mxRecords.Add(TObject(e));
+      if mxDebug and mxDebugVerbose then DebugMessage('    Found record '+Name(rec));
+      mxRecords.Add(TObject(rec));
       Inc(mxRecordsFound);
     end;
     
@@ -637,11 +648,6 @@ begin
   if not mxMastersAdded then AddMastersToPatch;
   
   // copy record to patch
-  if mxCopyWinningOverrides then rec := WinningOverrideBefore(rec, mxPatchFile);
-  if not Assigned(rec) then begin
-    DebugMessage('Couldn''t find winning override!');
-    exit;
-  end;
   try
     Result := wbCopyElementToFile(rec, mxPatchFile, false, true);
     mxPatchRecords.Add(TObject(Result));
@@ -681,7 +687,7 @@ begin
   // if all checks pass, loop through records list
   for i := 0 to Pred(mxRecords.Count) do begin
     rec := ObjectToElement(mxRecords[i]);
-    if mxCopyWinningOverrides then 
+    if mxLoadWinningOverrides then 
       rec := WinningOverrideBefore(rec, mxPatchFile);
     
     // winningOverrideBefore failed

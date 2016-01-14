@@ -36,7 +36,7 @@ begin
       DefaultOptionsMXPF;
       Expect(mxLoadMasterRecords, 'Should set mxLoadMasterRecords to true');
       Expect(mxSkipPatchedRecords, 'Should set mxSkipPatchedRecords to true');
-      Expect(mxCopyWinningOverrides, 'Should set mxCopyWinningOverrides to true');
+      Expect(mxLoadWinningOverrides, 'Should set mxLoadWinningOverrides to true');
       Pass;
     except 
       on x: Exception do Fail(x);
@@ -50,7 +50,7 @@ begin
       Expect(not mxCopyCalled, 'Should set mxCopyCalled to false');
       Expect(not mxLoadMasterRecords, 'Should set mxLoadMasterRecords to false');
       Expect(not mxLoadOverrideRecords, 'Should set mxLoadOverrideRecords to false');
-      Expect(not mxCopyWinningOverrides, 'Should set mxCopyWinningOverrides to false');
+      Expect(not mxLoadWinningOverrides, 'Should set mxLoadWinningOverrides to false');
       ExpectEqual(mxFileMode, 0, 'Should set mxFileMode to 0');
       ExpectEqual(mxRecordsCopied, 0, 'Should set mxRecordsCopied to 0');
       Expect(not Assigned(mxPatchFile), 'Should set mxPatchFile to nil');
@@ -1150,11 +1150,11 @@ begin
         end;
       end;
       
-      // Test mxCopyWinningOverrides
-      Describe('mxCopyWinningOverrides');
+      // Test mxLoadWinningOverrides
+      Describe('mxLoadWinningOverrides');
       try
         InitializeMXPF;
-        mxCopyWinningOverrides := true;
+        mxLoadWinningOverrides := true;
         SetExclusions('Skyrim.esm');
         PatchFileByName('TestMXPF-3.esp');
         LoadRecords('ARMO');
@@ -1166,7 +1166,7 @@ begin
         
         // when winning override is in a file not in the file selection
         InitializeMXPF;
-        mxCopyWinningOverrides := true;
+        mxLoadWinningOverrides := true;
         SetExclusions('Skyrim.esm');
         PatchFileByName('TestMXPF-2.esp');
         LoadRecords('WEAP');
