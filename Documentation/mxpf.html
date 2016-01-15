@@ -96,6 +96,7 @@
     </a>
     <ul class="toc_section">
       <li>- <a href="#LoadRecords">LoadRecords</a></li>
+      <li>- <a href="#LoadChildRecords">LoadChildRecords</a></li>
       <li>- <a href="#GetRecord">GetRecord</a></li>
       <li>- <a href="#RemoveRecord">RemoveRecord</a></li>
       <li>- <a href="#MaxRecordIndex">MaxRecordIndex</a></li>
@@ -452,6 +453,21 @@ LoadRecords('ARMO');
 <pre>SetExclusions(mxHardcodedDatFiles);
 LoadRecords('WOOP'); // loads all WOOP (word of power) records
 LoadRecords('OTFT'); // loads all OTFT (outfit) records
+</pre>
+
+    <p id="LoadChildRecords">
+      <b class="header">LoadChildRecords</b> <Code>procedure LoadChildRecords(sig: string);</code>
+      <br />
+      Loads records from the file selection specified with <tt>SetInclusions</tt>
+      or <tt>SetExclusions</tt>. All records matching the input signature, 
+      <b>sig</b> will be added to the <tt>mxRecords</tt> list.  You must use this
+      function instead of <tt>LoadRecords</tt> when loading records from child
+      groups.  These are Dialogue Topic Info records (INFO) and any records that 
+      are children of Cell or Worldspace records (NAVM, ACHR, REFR, etc.).
+  </p>
+<pre>SetExclusions(mxHardcodedDatFiles);
+LoadChildRecords('NAVM'); // loads all NAVM (navmesh) records
+LoadChildRecords('REFR'); // loads all REFR (object reference) records
 </pre>
 
     <p id="GetRecord">
