@@ -4,7 +4,8 @@ MXPF is an xEdit scripting library that provides a variety of functions for the 
 MXPF is comprised a suite of functions that do the work of finding the records you want to patch, identifying/creating a patch file, and copying records to the patch.  Where you would normally have to learn to do all of these steps yourself, with MXPF you can accomplish everything you need with a few simple functions.
 
 # Dependencies
-* mteFunctions: Comes packaged with mxpf.  Updates available on [GitHub](https://github.com/matortheeternal/TES5EditScripts/blob/master/trunk/Edit%20Scripts/mteFunctions.pas).
+* [mteFunctions](https://github.com/matortheeternal/TES5EditScripts/blob/master/trunk/Edit%20Scripts/mteFunctions.pas): Utility and helper functions for xEdit scripting.  Comes packaged with mxpf.
+* [jvTest](https://github.com/matortheeternal/jvTest): jvInterpreter testing framework.  Comes packaged with mxpf.
 * xEdit: Download from [Nexus Mods](http://www.nexusmods.com/skyrim/mods/25859), or [GitHub](https://github.com/TES5Edit/TES5Edit)
 * Bethesda game: xEdit supports [Skyrim](http://store.steampowered.com/app/72850), 
 [Oblivion](http://store.steampowered.com/app/22330), 
