@@ -75,8 +75,6 @@ var
 begin
   // exit if no debug messages to save
   if (mxDebugMessages.Count = 0) then exit;
-  // exit if saving is disallowed
-  if mxDisallowSaving then exit;
   
   // save to mxpf logs folder in scripts path
   filename := ScriptsPath + 'logs\mxpf\mxpf-debug-'+FileDateTimeStr(Now)+'.txt';
@@ -89,8 +87,6 @@ procedure PrintDebugMessages;
 begin
   // exit if no debug messages to print
   if (mxDebugMessages.Count = 0) then exit;
-  // exit if printing is disallowed
-  if mxDisallowPrinting then exit;
   
   // else print to xEdit's log
   AddMessage(mxDebugMessages.Text);
@@ -111,8 +107,6 @@ var
 begin
   // exit if no failure messages to save
   if (mxFailureMessages.Count = 0) then exit;
-  // exit if saving is disallowed
-  if mxDisallowSaving then exit;
   
   // save to mxpf logs folder in scripts path
   filename := ScriptsPath + 'logs\mxpf\mxpf-failures-'+FileDateTimeStr(Now)+'.txt';
@@ -125,8 +119,6 @@ procedure PrintFailureMessages;
 begin
   // exit if no failure messages to print
   if (mxFailureMessages.Count = 0) then exit;
-  // exit if printing is disallowed
-  if mxDisallowPrinting then exit;
   
   // else print to xEdit's log
   AddMessage(mxFailureMessages.Text);
@@ -170,11 +162,17 @@ begin
     DebugMessage(' ');
     DebugMessage('MXPF Finalized at '+TimeStr(Now));
   end;
-  // print/save messages
-  if mxPrintDebug then PrintDebugMessages;
-  if mxPrintFailures then PrintFailureMessages;
-  if mxSaveDebug then SaveDebugMessages;
-  if mxSaveFailures then SaveFailureMessages;
+  
+  // print messages
+  if not mxDisallowPrinting then begin
+    if mxPrintDebug then PrintDebugMessages;
+    if mxPrintFailures then PrintFailureMessages;
+  end;
+  // save messages
+  if not mxDisallowSaving then begin
+    if mxSaveDebug then SaveDebugMessages;
+    if mxSaveFailures then SaveFailureMessages;
+  end;
   
   // reset variables
   mxInitialized := false;
