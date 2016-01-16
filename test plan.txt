@@ -168,8 +168,3 @@ TEST RECORD PATCHING
     -> Verify it throws an exception
   - Valid index
     -> Verify it returns the correct record
-  
-TEST REPORTING
-  Test PrintMXPFReport
-  - InitializeMXPF not called
-    -> Verify it throws an exception
