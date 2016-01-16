@@ -32,6 +32,10 @@
       Download and Setup
     </a>
 
+    <a class="toc_title" href="#running_tests">
+      Running Tests
+    </a>
+
     <a class="toc_title" href="#user_constants">
       User Constants
     </a>
@@ -144,9 +148,8 @@
     everything you need with a few simple functions.</p>
 
     <p>The project is available on GitHub and Nexus Mods.  A test suite is
-    currently being developed.  There are also a bunch of example scripts
-    available which show you how you can use MXPF and xEdit Scripting to
-    solve problems.</p>
+    available.  There are also a bunch of example scripts available which show 
+    you how you can use MXPF and xEdit Scripting to solve problems.</p>
 
     <p>You can report bugs and discuss features on the GitHub issues page.
     You can also talk with developers and other users on the <a href="https://www.hipchat.com/ggzoQiNoI">xEdit HipChat</a>,
@@ -174,7 +177,6 @@
     </ul>
 
     <h2 id="download_setup">Download and Setup</h2>
-
     You can download MXPF from
     <a href="https://github.com/matortheeternal/mxpf">GitHub</a> or
     <a href="http://www.nexusmods.com/skyrim/mods/68617">Nexus Mods</a>.
@@ -182,7 +184,22 @@
     Edit Scripts folder into xEdit's Edit Scripts folder.  Once you've
     done that, you're set!  You can then use MXPF in any script by
     putting <tt>uses mxpf;</tt> after the unit declaration.
-
+    
+    <h2 id="running_tests">Running Tests</h2>
+    You can run the MXPF tests through TES5Edit.  <b>Note:</b> You must have 
+    Skyrim installed to run the MXPF tests.
+    <ol>
+      <li>Install the TestMXPF ESP files into your data directory.  If you're
+        using a mod manager you could also, alternatively, install them as a new
+        mod.</li>
+      <li>Load Skyrim.esm, TestMXPF-1.esp, TestMXPF-2.esp, and TestMXPF-3.esp 
+        into TES5Edit.</li>
+      <li>Wait for the background loader to complete.</li>
+      <li>Right-click any file in TES5Edit and choose <tt>Apply Script</tt>.</li>
+      <li>Select <tt>MXPF - Tests</tt> from the dropdown menu and click OK.</li>
+      <li>Wait for tests to complete.  The log will be printed to TES5Edit's
+        messages tab and will also be saved to <tt>Edit Scripts\jvTest\</tt></li>
+    </ol>
 
     <h2 id="user_constants">User Constants</h2>
     User constants are constants that are meant to be set by the user.
