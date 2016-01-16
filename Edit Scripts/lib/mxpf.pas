@@ -44,8 +44,8 @@ const
 var
   mxFiles, mxMasters, mxDebugMessages, mxFailureMessages: TStringList;
   mxRecords, mxPatchRecords: TList;
-  mxFileMode, mxRecordsCopied, mxRecordsFound, mxDuplicateRecords, 
-  mxMasterRecords, mxOverrideRecords: Integer;
+  mxFileMode, mxRecordsCopied, mxRecordsFound, mxMasterRecords, 
+  mxOverrideRecords: Integer;
   mxInitialized, mxLoadCalled, mxCopyCalled, mxLoadMasterRecords, 
   mxLoadOverrideRecords, mxLoadWinningOverrides, mxMastersAdded,
   mxSkipPatchedRecords, mxDisallowNewFile, mxDisallowSaving, 
@@ -364,7 +364,6 @@ begin
     mxRecordsFound := 0;
     mxMasterRecords := 0;
     mxOverrideRecords := 0;
-    mxDuplicateRecords := 0;
     // loop through records in group
     for j := 0 to Pred(ElementCount(g)) do begin
       rec := ElementByIndex(g, j);
@@ -397,16 +396,10 @@ begin
         end;
       end;
       
-      // add record to list if not already present
-      if mxRecords.IndexOf(TObject(rec)) = -1 then begin
-        if mxDebug and mxDebugVerbose then DebugMessage('     Found record '+Name(rec));
-        mxRecords.Add(TObject(rec));
-        Inc(mxRecordsFound);
-      end
-      else begin
-        if mxDebug and mxDebugVerbose then DebugMessage('     Skipping duplicate record '+Name(rec));
-        Inc(mxDuplicateRecords);
-      end;
+      // add record to list
+      if mxDebug and mxDebugVerbose then DebugMessage('     Found record '+Name(rec));
+      mxRecords.Add(TObject(rec));
+      Inc(mxRecordsFound);
     end;
     
     // print number of records we added to the list
@@ -416,8 +409,6 @@ begin
         DebugMessage(Format('    Skipped %d override records', [mxOverrideRecords]));   
       if mxLoadOverrideRecords then 
         DebugMessage(Format('    Skipped %d master records', [mxMasterRecords]));
-      if mxLoadWinningOverrides then 
-        DebugMessage(Format('    Skipped %d duplicate winning override records', [mxDuplicateRecords]));   
     end;
   end;
   
@@ -434,10 +425,9 @@ end;
 procedure LoadChildRecords(sig, groupSig: string);
 var
   start: TDateTime;
-  i, j, index: Integer;
+  i, j: Integer;
   f, g, rec: IInterface;
   filename: string;
-  wObj: TObject;
 begin
   // if user hasn't initialized MXPF, raise exception
   if not mxInitialized then
@@ -495,7 +485,6 @@ begin
     
     // load records with wbGetSiblingRecords
     wbGetSiblingRecords(g, sig, false, mxRecords);
-    mxDuplicateRecords := 0;
     mxOverrideRecords := 0;
     mxMasterRecords := 0;
     mxRecordsFound := mxRecords.Count - mxRecordsFound;
@@ -523,17 +512,8 @@ begin
         
         // if loading winning override records, get winning override
         if mxLoadWinningOverrides then try
-          wObj := TObject(WinningOverrideBefore(rec, mxPatchFile));
-          index := mxRecords.IndexOf(wObj);
-          if (index = -1) or (index = j) then begin
-            if mxDebug and mxDebugVerbose then DebugMessage('    Loading winning override from '+GetFileName(GetFile(rec)));
-            mxRecords[j] := wObj;
-          end
-          else begin
-            if mxDebug and mxDebugVerbose then DebugMessage('    Removing duplicate record '+Name(rec));
-            mxRecords.Delete(j);
-            Inc(mxDuplicateRecords);
-          end;
+          if mxDebug and mxDebugVerbose then DebugMessage('    Loading winning override from '+GetFileName(GetFile(rec)));
+          mxRecords[j] := wObj;
         except
           on x: Exception do begin
             DebugMessage('    Exception getting winning override for '+Name(rec));
@@ -551,8 +531,6 @@ begin
         DebugMessage(Format('    Removed %d override records', [mxOverrideRecords]));
       if mxLoadWinningOverrides then 
         DebugMessage(Format('    Removed %d master records', [mxMasterRecords]));
-      if mxLoadWinningOverrides then 
-        DebugMessage(Format('    Removed %d duplicate winning override records', [mxDuplicateRecords]));
     end;
   end;
   
