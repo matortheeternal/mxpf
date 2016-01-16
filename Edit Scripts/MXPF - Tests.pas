@@ -586,6 +586,7 @@ begin
         SetExclusions('Skyrim.esm');
         PatchFileByName('TestMXPF-3.esp');
         LoadRecords('ARMO');
+        ExpectEqual(mxRecords.Count, 26, 'Should load records');
         rec := GetRecord(0);
         s := GetElementEditValues(rec, 'DNAM');
         ExpectEqual(s, '15.000000', 'Should have the winning override record');
@@ -597,6 +598,7 @@ begin
         SetExclusions('Skyrim.esm');
         PatchFileByName('TestMXPF-2.esp');
         LoadRecords('WEAP');
+        ExpectEqual(mxRecords.Count, 1, 'Should load records');
         rec := GetRecord(0);
         s := GetElementEditValues(rec, 'DATA\Damage');
         ExpectEqual(s, '8', 'Should not copy winning override from file outside of the file selection');
@@ -747,6 +749,40 @@ begin
         LoadChildRecords('ACHR', 'CELL');
         ExpectEqual(mxRecords.Count, 8, 'Should only load override records');
         FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test mxLoadWinningOverrides
+      Describe('mxLoadWinningOverrides');
+      try
+        InitializeMXPF;
+        mxLoadWinningOverrides := true;
+        SetExclusions('Skyrim.esm');
+        PatchFileByName('TestMXPF-3.esp');
+        LoadChildRecords('ACHR', 'CELL');
+        ExpectEqual(mxRecords.Count, 16, 'Should load records');
+        rec := GetRecord(0);
+        s := GetElementEditValues(rec, 'DATA\Position\Z');
+        ExpectEqual(s, '242.000000', 'Should have the winning override record');
+        FinalizeMXPF;
+        
+        // when winning override is in a file not in the file selection
+        InitializeMXPF;
+        mxLoadWinningOverrides := true;
+        SetExclusions('Skyrim.esm');
+        PatchFileByName('TestMXPF-2.esp');
+        LoadChildRecords('ACHR', 'CELL');
+        ExpectEqual(mxRecords.Count, 8, 'Should load records');
+        rec := GetRecord(0);
+        s := GetElementEditValues(rec, 'DATA\Position\Z');
+        ExpectEqual(s, '241.000000', 'Should not use winning override from file outside of the file selection');
+        FinalizeMXPF;
+        
         Pass;
       except 
         on x: Exception do begin
