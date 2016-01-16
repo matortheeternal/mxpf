@@ -452,6 +452,7 @@ procedure TestRecordProcessing;
 var
   bCaughtException: boolean;
   rec: IInterface;
+  s: string;
 begin
    Describe('Record Processing');
   try
@@ -569,6 +570,38 @@ begin
         LoadRecords('ARMO');
         ExpectEqual(mxRecords.Count, 8, 'Should only load override records');
         FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test mxLoadWinningOverrides
+      Describe('mxLoadWinningOverrides');
+      try
+        InitializeMXPF;
+        mxLoadWinningOverrides := true;
+        SetExclusions('Skyrim.esm');
+        PatchFileByName('TestMXPF-3.esp');
+        LoadRecords('ARMO');
+        rec := GetRecord(0);
+        s := GetElementEditValues(rec, 'DNAM');
+        ExpectEqual(s, '15.000000', 'Should have the winning override record');
+        FinalizeMXPF;
+        
+        // when winning override is in a file not in the file selection
+        InitializeMXPF;
+        mxLoadWinningOverrides := true;
+        SetExclusions('Skyrim.esm');
+        PatchFileByName('TestMXPF-2.esp');
+        LoadRecords('WEAP');
+        rec := GetRecord(0);
+        s := GetElementEditValues(rec, 'DATA\Damage');
+        ExpectEqual(s, '8', 'Should not copy winning override from file outside of the file selection');
+        FinalizeMXPF;
+        
         Pass;
       except 
         on x: Exception do begin
@@ -1288,40 +1321,6 @@ begin
         ExpectEqual(mxPatchRecords.Count, 1, 'Should add the record to mxPatchRecords');
         ExpectEqual(s, 'ArmorIronGauntlets "Iron Gauntlets" [ARMO:00012E46]', 'Record should be present in the patch file');
         FinalizeMXPF;
-        Pass;
-      except 
-        on x: Exception do begin
-          if mxInitialized then FinalizeMXPF;
-          Fail(x);
-        end;
-      end;
-      
-      // Test mxLoadWinningOverrides
-      Describe('mxLoadWinningOverrides');
-      try
-        InitializeMXPF;
-        mxLoadWinningOverrides := true;
-        SetExclusions('Skyrim.esm');
-        PatchFileByName('TestMXPF-3.esp');
-        LoadRecords('ARMO');
-        rec := CopyRecordToPatch(0);
-        s := GetElementEditValues(rec, 'DNAM');
-        Remove(rec);
-        ExpectEqual(s, '15.000000', 'Should copy the winning override record');
-        FinalizeMXPF;
-        
-        // when winning override is in a file not in the file selection
-        InitializeMXPF;
-        mxLoadWinningOverrides := true;
-        SetExclusions('Skyrim.esm');
-        PatchFileByName('TestMXPF-2.esp');
-        LoadRecords('WEAP');
-        rec := CopyRecordToPatch(0);
-        s := GetElementEditValues(rec, 'DATA\Damage');
-        Remove(rec);
-        ExpectEqual(s, '8', 'Should not copy winning override from file outside of the file selection');
-        FinalizeMXPF;
-        
         Pass;
       except 
         on x: Exception do begin
