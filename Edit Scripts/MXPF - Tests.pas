@@ -1641,7 +1641,7 @@ begin
         end;
       end;
       
-      // Test with an invalid index
+      // Test with a valid index
       Describe('Valid index');
       try
         InitializeMXPF;
