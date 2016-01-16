@@ -439,7 +439,7 @@ begin
     // skip patch file
     if filename = GetFileName(mxPatchFile) then begin
       if mxDebug then DebugMessage('  Skipping patch file '+filename);
-      continue;
+      break;
     end;
     
     // handle file mode
