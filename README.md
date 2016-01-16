@@ -13,7 +13,7 @@ The ESPs folder has three plugins for use with the MXPF test suite, you don't ne
 ## Dependencies
 * [mteFunctions](https://github.com/matortheeternal/TES5EditScripts/blob/master/trunk/Edit%20Scripts/mteFunctions.pas): Utility and helper functions for xEdit scripting.  Comes packaged with mxpf.
 * [jvTest](https://github.com/matortheeternal/jvTest): jvInterpreter testing framework.  Comes packaged with mxpf.
-* xEdit: Download from [Nexus Mods](http://www.nexusmods.com/skyrim/mods/25859), or [GitHub](https://github.com/TES5Edit/TES5Edit)
+* xEdit v3.1.2 or newer: Download from [Nexus Mods](http://www.nexusmods.com/skyrim/mods/25859), or [GitHub](https://github.com/TES5Edit/TES5Edit)
 * Bethesda game: xEdit supports [Skyrim](http://store.steampowered.com/app/72850), 
 [Oblivion](http://store.steampowered.com/app/22330), 
 [Fallout 3](http://store.steampowered.com/app/22300), and 
