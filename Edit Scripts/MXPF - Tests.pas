@@ -441,6 +441,7 @@ end;
 { TEST RECORD PROCESSING
   Tests Record Processing MXPF functions:
     - LoadRecords
+    - LoadChildRecords
     - GetRecord
     - RemoveRecord
     - MaxRecordIndex
@@ -582,6 +583,151 @@ begin
         InitializeMXPF;
         SetExclusions('Skyrim.esm');
         LoadRecords('SLGM');
+        ExpectEqual(mxRecords.Count, 0, 'Should load 0 records');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // All tests passed?
+      Pass;
+    except 
+      on x: Exception do Fail(x);
+    end;
+    
+    
+    Describe('LoadChildRecords');
+    try
+      // Test with MXPF not initialized
+      Describe('MXPF not initialized');
+      try
+        bCaughtException := false;
+        try
+          LoadChildRecords('REFR', 'CELL');
+        except
+          on x: Exception do begin
+            bCaughtException := true;
+            ExpectEqual(x.Message, 'MXPF Error: You need to call InitializeMXPF before calling LoadChildRecords', 'Should raise the correct exception');
+          end;
+        end;
+        Expect(bCaughtException, 'Should have raised an exception');
+        Pass;
+      except 
+        on x: Exception do Fail(x);
+      end;
+      
+      // Test with mxPatchFile not assigned
+      Describe('Patch file not assigned');
+      try
+        InitializeMXPF;
+        LoadChildRecords('REFR', 'CELL');
+        Expect(true, 'Should not throw an exception');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test with mxPatchFile assigned
+      Describe('Patch file assigned');
+      try
+        InitializeMXPF;
+        PatchFileByAuthor('MXPF Tests');
+        LoadChildRecords('ACHR', 'CELL');
+        ExpectEqual(mxMasters.Text, 'Skyrim.esm'#13#10, 'Should load files into mxMasters');
+        ExpectEqual(mxRecords.Count, 4452, 'Should load records into mxRecords');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test exclusion mode
+      Describe('Exclusion mode');
+      try
+        InitializeMXPF;
+        PatchFileByName('TestMXPF-2.esp');
+        SetExclusions('TestMXPF-1.esp');
+        LoadChildRecords('PGRE', 'CELL');
+        ExpectEqual(mxMasters.Text, 'Skyrim.esm'#13#10, 'Should not add masters from skipped files');
+        ExpectEqual(mxRecords.Count, 29, 'Should not load records from excluded files');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test inclusion mode
+      Describe('Inclusion mode');
+      try
+        InitializeMXPF;
+        PatchFileByName('TestMXPF-2.esp');
+        SetInclusions('Skyrim.esm');
+        LoadChildRecords('PGRE', 'CELL');
+        ExpectEqual(mxMasters.Text, 'Skyrim.esm'#13#10, 'Should only add masters from included files');
+        ExpectEqual(mxRecords.Count, 29, 'Should only load records from included files');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test mxLoadMasterRecords
+      Describe('mxLoadMasterRecords');
+      try
+        InitializeMXPF;
+        mxLoadMasterRecords := true;
+        PatchFileByName('TestMXPF-2.esp');
+        LoadChildRecords('ACHR', 'CELL');
+        ExpectEqual(mxRecords.Count, 4452, 'Should only load master records');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test mxLoadOverrideRecords
+      Describe('mxLoadOverrideRecords');
+      try
+        InitializeMXPF;
+        mxLoadOverrideRecords := true;
+        PatchFileByName('TestMXPF-2.esp');
+        LoadChildRecords('ACHR', 'CELL');
+        ExpectEqual(mxRecords.Count, 8, 'Should only load override records');
+        FinalizeMXPF;
+        Pass;
+      except 
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // Test record signature not found in file selection
+      Describe('No records matching signature');
+      try
+        InitializeMXPF;
+        SetExclusions('Skyrim.esm');
+        LoadChildRecords('NAVM', 'CELL');
         ExpectEqual(mxRecords.Count, 0, 'Should load 0 records');
         FinalizeMXPF;
         Pass;
