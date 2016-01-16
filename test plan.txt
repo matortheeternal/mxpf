@@ -60,11 +60,36 @@ TEST RECORD PROCESSING
     -> Verify mxRecords.Count
   - Test mxLoadOverrideRecords
     -> Verify mxRecords.Count
+  - Test mxLoadWinningOverrides
+    -> Verify mxRecords.Count
+
+  Test LoadChildRecords
+  - InitializeMXPF not called
+    -> Verify it doesn't cause an exception
+  - mxPatchFile not assigned
+    -> Verify it doesn't cause an exception
+  - mxPatchFile assigned
+    -> Verify mxMasters.Text
+    -> Verify mxRecords.Count
+  - Verify exclusion mode works
+    -> Verify mxMasters.Text
+    -> Verify mxRecords.Count
+  - Verify inclusion mode works
+    -> Verify mxMasters.Text
+    -> Verify mxRecords.Count
+  - Test mxLoadMasterRecords
+    -> Verify mxRecords.Count
+  - Test mxLoadOverrideRecords
+    -> Verify mxRecords.Count
+  - Test mxLoadWinningOverrides
+    -> Verify mxRecords.Count
+
   Test MaxRecordIndex
   - InitializeMXPF not called
     -> Verify it returns -1
   - InitializeMXPF called
     -> Verify it returns mxRecords.Count - 1
+
   Test GetRecord
   - InitializeMXPF not called
     -> Verify it returns nil
@@ -76,6 +101,7 @@ TEST RECORD PROCESSING
     -> Verify it throws an exception
   - Valid index
     -> Verify it returns the correct record
+
   Test RemoveRecord
   - InitializeMXPF not called
     -> Verify it throws an exception
@@ -102,6 +128,7 @@ TEST RECORD PATCHING
   - mxPatchfile assigned
     -> Verify mxMastersAdded is true
     -> Verify the patch file has the new masters
+
   Test CopyRecordToPatch
   - InitializeMXPF not called
     -> Verify it throws an exception
@@ -123,14 +150,12 @@ TEST RECORD PATCHING
     -> Verify mxMastersAdded is true
     -> Verify the record is added to mxPatchRecords
     -> Verify the record is present in the patch file
-  - mxCopyWinningOverrides
-    -> Verify the record copied is the winning override
-    -> Verify when winning override is in a file not in the file selection
   - mxSkipPatchedRecords
     -> Verify mxCopyCalled is false
     -> Verify mxMastersAdded is false
     -> Verify the record isn't added to mxPatchRecords
     -> Verify the record isn't present in the patch file
+
   Test CopyRecordsToPatch
   - InitializeMXPF not called
     -> Verify it throws an exception
@@ -152,11 +177,13 @@ TEST RECORD PATCHING
   - mxCopyWinningOverrides
     -> Verify the record copied is the winning override
     -> Verify when winning override is in a file not in the file selection
+
   Test MaxPatchRecordIndex
   - InitializeMXPF not called
     -> Verify it raises an exception
   - InitializeMXPF called
     -> Verify it returns mxPatchRecords.Count - 1
+
   Test GetPatchRecord
   - InitializeMXPF not called
     -> Verify it returns nil
