@@ -388,7 +388,7 @@ begin
             [GetFileName(GetFile(rec))]));
         except
           on x: Exception do begin
-            DebugMessage('   Exception getting winning override for '+Name(rec));
+            DebugMessage('   Exception getting winning override for '+Name(rec)+', '+x.Message);
             continue;
           end;
         end;
@@ -510,11 +510,12 @@ begin
         
         // if loading winning override records, get winning override
         if mxLoadWinningOverrides then try
+          rec := WinningOverrideBefore(rec, mxPatchFile);
           if mxDebug and mxDebugVerbose then DebugMessage('    Loading winning override from '+GetFileName(GetFile(rec)));
-          mxRecords[j] := wObj;
+          mxRecords[j] := TObject(rec);
         except
           on x: Exception do begin
-            DebugMessage('    Exception getting winning override for '+Name(rec));
+            DebugMessage('   Exception getting winning override for '+Name(rec)+', '+x.Message);
             mxRecords.Delete(j);
             continue;
           end;
