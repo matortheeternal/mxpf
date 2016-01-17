@@ -4,7 +4,7 @@
 
 unit UserScript;
 
-uses 'lib\mxpf', 'lib\mteFunctions';
+uses 'lib\mxpf';
 
 function Initialize: Integer;
 var
