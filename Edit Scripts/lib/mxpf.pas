@@ -769,13 +769,75 @@ end;
 // MACROS
 //=========================================================================
 
+function MultiFileSelectString(sPrompt: String): String;
+var
+  sl: TStringList;
+begin
+  sl := TStringList.Create;
+  try
+    MultiFileSelect(sl, sPrompt);
+    Result := sl.CommaText;
+  finally
+    sl.Free;
+  end;
+end;
+
+procedure SetFileSelection(sFiles: String; bMode: Boolean);
+begin
+  // inclusions mode if bMode is true
+  // exclusions mode if bMode is false
+  if bMode then
+    SetInclusions(sFiles)
+  else
+    SetExclusions(sFiles);
+end;
+
+procedure MultiLoad(sRecords: String);
+var
+  sl: TStringList;
+  i, index: Integer;
+  sig, groupSig: String;
+begin
+  sl := TStringList.Create;
+  try
+    // split on commas
+    sl.CommaText := sRecords;
+    for i := 0 to Pred(sl.Count) do begin
+      // each token should be a record signature
+      sig := sl[i];
+      
+      // LoadChildRecords when there are two signatures separated
+      // by a colon.  E.g. WRLD:REFR
+      index := Pos(':', sig);
+      if index > 0 then begin
+        groupSig := Copy(sig, 1, 4);
+        sig := Copy(sig, 6, 9);
+        LoadChildRecords(groupSig, sig);
+      end
+      // else just LoadRecords
+      else
+        LoadRecords(sRec);
+    end;
+  finally
+    sl.Free;
+  end;
+end;
+
+procedure QuickLoad(sFiles, sRecords: String; bMode: Boolean);
+begin
+  InitializeMXPF;
+  DefaultOptionsMXPF;
+  SetFileSelection(sFiles, bMode);
+  MultiLoad(sRecords);
+end;
+
 procedure QuickPatch(sAuthor, sFiles, sRecords: String; bMode: Boolean);
 begin
   InitializeMXPF;
   DefaultOptionsMXPF;
   PatchFileByAuthor(sAuthor);
-  SetExclusions(sExclusions);
-  LoadRecords(sRecords);
+  SetFileSelection(sFiles, bMode);
+  MultiLoad(sRecords);
   CopyRecordsToPatch;
 end;
 
