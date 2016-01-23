@@ -195,3 +195,21 @@ TEST RECORD PATCHING
     -> Verify it throws an exception
   - Valid index
     -> Verify it returns the correct record
+
+TEST MACROS
+  Test SetFileSelection
+  - Mode false
+    -> Verify in inclusion mode
+    -> Verify file selection is loaded into MXPF
+  - Mode true
+    -> Verify in exclusion mode
+    -> Verify file selection is loaded into MXPF
+  Test MultiLoad
+  - No signatures
+    -> Verify no records are loaded
+  - One signature
+    -> Verify records are loaded
+  - One signature pair
+    -> Verify records are loaded
+  - Multiple signatures and signature pairs
+    -> Verify records are loaded
