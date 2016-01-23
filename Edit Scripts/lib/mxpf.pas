@@ -420,7 +420,7 @@ begin
   end;
 end;
 
-procedure LoadChildRecords(sig, groupSig: string);
+procedure LoadChildRecords(groupSig, sig: string);
 var
   start: TDateTime;
   i, j: Integer;

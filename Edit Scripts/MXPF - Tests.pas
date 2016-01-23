@@ -642,7 +642,7 @@ begin
       try
         bCaughtException := false;
         try
-          LoadChildRecords('REFR', 'CELL');
+          LoadChildRecords('CELL', 'REFR');
         except
           on x: Exception do begin
             bCaughtException := true;
@@ -659,7 +659,7 @@ begin
       Describe('Patch file not assigned');
       try
         InitializeMXPF;
-        LoadChildRecords('REFR', 'CELL');
+        LoadChildRecords('CELL', 'REFR');
         Expect(true, 'Should not throw an exception');
         FinalizeMXPF;
         Pass;
@@ -675,7 +675,7 @@ begin
       try
         InitializeMXPF;
         PatchFileByAuthor('MXPF Tests');
-        LoadChildRecords('ACHR', 'CELL');
+        LoadChildRecords('CELL', 'ACHR');
         ExpectEqual(mxMasters.Text, 'Skyrim.esm'#13#10, 'Should load files into mxMasters');
         ExpectEqual(mxRecords.Count, 4452, 'Should load records into mxRecords');
         FinalizeMXPF;
@@ -693,7 +693,7 @@ begin
         InitializeMXPF;
         PatchFileByName('TestMXPF-2.esp');
         SetExclusions('TestMXPF-1.esp');
-        LoadChildRecords('PGRE', 'CELL');
+        LoadChildRecords('CELL', 'PGRE');
         ExpectEqual(mxMasters.Text, 'Skyrim.esm'#13#10, 'Should not add masters from skipped files');
         ExpectEqual(mxRecords.Count, 29, 'Should not load records from excluded files');
         FinalizeMXPF;
@@ -711,7 +711,7 @@ begin
         InitializeMXPF;
         PatchFileByName('TestMXPF-2.esp');
         SetInclusions('Skyrim.esm');
-        LoadChildRecords('PGRE', 'CELL');
+        LoadChildRecords('CELL', 'PGRE');
         ExpectEqual(mxMasters.Text, 'Skyrim.esm'#13#10, 'Should only add masters from included files');
         ExpectEqual(mxRecords.Count, 29, 'Should only load records from included files');
         FinalizeMXPF;
@@ -729,7 +729,7 @@ begin
         InitializeMXPF;
         mxLoadMasterRecords := true;
         PatchFileByName('TestMXPF-2.esp');
-        LoadChildRecords('ACHR', 'CELL');
+        LoadChildRecords('CELL', 'ACHR');
         ExpectEqual(mxRecords.Count, 4452, 'Should only load master records');
         FinalizeMXPF;
         Pass;
@@ -746,7 +746,7 @@ begin
         InitializeMXPF;
         mxLoadOverrideRecords := true;
         PatchFileByName('TestMXPF-2.esp');
-        LoadChildRecords('ACHR', 'CELL');
+        LoadChildRecords('CELL', 'ACHR');
         ExpectEqual(mxRecords.Count, 8, 'Should only load override records');
         FinalizeMXPF;
         Pass;
@@ -764,7 +764,7 @@ begin
         mxLoadWinningOverrides := true;
         SetExclusions('Skyrim.esm');
         PatchFileByName('TestMXPF-3.esp');
-        LoadChildRecords('ACHR', 'CELL');
+        LoadChildRecords('CELL', 'ACHR');
         ExpectEqual(mxRecords.Count, 16, 'Should load records');
         rec := GetRecord(0);
         s := GetElementEditValues(rec, 'DATA\Position\Z');
@@ -776,7 +776,7 @@ begin
         mxLoadWinningOverrides := true;
         SetExclusions('Skyrim.esm');
         PatchFileByName('TestMXPF-2.esp');
-        LoadChildRecords('ACHR', 'CELL');
+        LoadChildRecords('CELL', 'ACHR');
         ExpectEqual(mxRecords.Count, 8, 'Should load records');
         rec := GetRecord(0);
         s := GetElementEditValues(rec, 'DATA\Position\Z');
@@ -796,7 +796,7 @@ begin
       try
         InitializeMXPF;
         SetExclusions('Skyrim.esm');
-        LoadChildRecords('NAVM', 'CELL');
+        LoadChildRecords('CELL', 'NAVM');
         ExpectEqual(mxRecords.Count, 0, 'Should load 0 records');
         FinalizeMXPF;
         Pass;
