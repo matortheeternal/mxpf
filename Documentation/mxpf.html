@@ -473,18 +473,19 @@ LoadRecords('OTFT'); // loads all OTFT (outfit) records
 </pre>
 
     <p id="LoadChildRecords">
-      <b class="header">LoadChildRecords</b> <Code>procedure LoadChildRecords(sig: string);</code>
+      <b class="header">LoadChildRecords</b> <Code>procedure LoadChildRecords(groupSig, sig: string);</code>
       <br />
       Loads records from the file selection specified with <tt>SetInclusions</tt>
-      or <tt>SetExclusions</tt>. All records matching the input signature, 
-      <b>sig</b> will be added to the <tt>mxRecords</tt> list.  You must use this
-      function instead of <tt>LoadRecords</tt> when loading records from child
-      groups.  These are Dialogue Topic Info records (INFO) and any records that 
-      are children of Cell or Worldspace records (NAVM, ACHR, REFR, etc.).
+      or <tt>SetExclusions</tt>.  The group matching the input signature, 
+      <b>groupSig</b> will be searched for records matching the input signature
+      <b>sig</b>.  Found records will be added to the <tt>mxRecords</tt> list.  You 
+      must use this function instead of <tt>LoadRecords</tt> when loading records 
+      from child groups.  These are Dialogue Topic Info records (INFO) and any 
+      records that are children of Cell or Worldspace records (NAVM, ACHR, REFR, etc.).
   </p>
 <pre>SetExclusions(mxHardcodedDatFiles);
-LoadChildRecords('NAVM'); // loads all NAVM (navmesh) records
-LoadChildRecords('REFR'); // loads all REFR (object reference) records
+LoadChildRecords('WRLD', 'NAVM'); // loads all NAVM (navmesh) records from the WRLD (worldspace) group
+LoadChildRecords('CELL', 'REFR'); // loads all REFR (object reference) records from the CELL (cell) group
 </pre>
 
     <p id="GetRecord">
