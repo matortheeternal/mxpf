@@ -769,7 +769,7 @@ end;
 // MACROS
 //=========================================================================
 
-procedure QuickMXPF(sAuthor, sExclusions, sRecords: String);
+procedure QuickPatch(sAuthor, sFiles, sRecords: String; bMode: Boolean);
 begin
   InitializeMXPF;
   DefaultOptionsMXPF;

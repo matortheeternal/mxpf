@@ -4,7 +4,7 @@
   
   Sample MXPF Script, sets Key record weights to 0.05.
   
-  This script makes use of the QuickMXPF macro, which allows 
+  This script makes use of the QuickPatch macro, which allows 
   it to work in 3 lines of code.
 }
 
@@ -16,7 +16,7 @@ function Initialize: Integer;
 var
   i: integer;
 begin
-  QuickMXPF('MXPF - Reweight Keys', mxHardcodedDatFiles, 'KEYM');
+  QuickPatch('MXPF - Reweight Keys', mxHardcodedDatFiles, 'KEYM');
   for i := MaxPatchRecordIndex downto 0 do 
     seev(GetPatchRecord(i), 'DATA\Weight', '0.05');
   FinalizeMXPF;
