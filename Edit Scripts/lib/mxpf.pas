@@ -766,6 +766,20 @@ begin
 end;
 
 //=========================================================================
+// MACROS
+//=========================================================================
+
+procedure QuickMXPF(sAuthor, sExclusions, sRecords: String);
+begin
+  InitializeMXPF;
+  DefaultOptionsMXPF;
+  PatchFileByAuthor(sAuthor);
+  SetExclusions(sExclusions);
+  LoadRecords(sRecords);
+  CopyRecordsToPatch;
+end;
+
+//=========================================================================
 // REPORTING
 //=========================================================================
 procedure PrintMXPFReport;
