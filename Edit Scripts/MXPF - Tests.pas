@@ -1117,7 +1117,7 @@ var
   sl: TStringList;
   count: Integer; 
 begin
-   Describe('Record Patching');
+  Describe('Record Patching');
   try
     Describe('AddMastersToPatch');
     try
@@ -1682,6 +1682,121 @@ end;
 
 
 {******************************************************************************}
+{ TEST MACROS
+  Tests MXPF Macro functions
+    - 
+}
+{******************************************************************************}
+
+procedure TestMacros;
+var
+  bCaughtException: boolean;
+  rec, g: IInterface;
+  s, fn: string;
+  sl: TStringList;
+  count: Integer; 
+begin
+  Describe('Macros');
+  try
+    Describe('MultiLoad');
+    try
+      Describe('Input records string is empty');
+      try
+        InitializeMXPF;
+        DefaultOptionsMXPF;
+        SetInclusions('Skyrim.esm');
+        MultiLoad('');
+        Expect(not mxLoadCalled, 'Should not load any records');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      Describe('Single record signature input');
+      try
+        InitializeMXPF;
+        DefaultOptionsMXPF;
+        SetInclusions('Skyrim.esm');
+        MultiLoad('ARMO');
+        Expect(mxLoadCalled, 'Should load records');
+        ExpectEqual(mxRecords.Count, 2762, 'Should load the correct records');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      Describe('Single signature pair input');
+      try
+        InitializeMXPF;
+        SetExclusions(mxBethesdaSkyrimFiles);
+        MultiLoad('CELL:ACHR');
+        Expect(mxLoadCalled, 'Should load records');
+        ExpectEqual(mxRecords.Count, 24, 'Should load the correct records');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      Describe('Multiple record signatures input');
+      try
+        InitializeMXPF;
+        DefaultOptionsMXPF;
+        SetInclusions('Skyrim.esm');
+        MultiLoad('ARMO,WEAP');
+        Expect(mxLoadCalled, 'Should load records');
+        ExpectEqual(mxRecords.Count, 5246, 'Should load the correct records');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      Describe('Multiple signature pairs input');
+      try
+        InitializeMXPF;
+        SetExclusions(mxBethesdaSkyrimFiles);
+        MultiLoad('CELL:ACHR,CELL:PGRE');
+        Expect(mxLoadCalled, 'Should load records');
+        ExpectEqual(mxRecords.Count, 26, 'Should load the correct records');
+        FinalizeMXPF;
+        Pass;
+      except
+        on x: Exception do begin
+          if mxInitialized then FinalizeMXPF;
+          Fail(x);
+        end;
+      end;
+      
+      // All tests passed?
+      Pass;
+    except
+      on x: Exception do Fail(x);
+    end;
+    
+    // All tests passed?
+    Pass;
+  except 
+    on x: Exception do Fail(x);
+  end;
+end;
+
+
+{******************************************************************************}
 { ENTRY POINTS
   Entry points for when the script is run in xEdit.
     - Initialize
@@ -1705,6 +1820,7 @@ begin
   TestFileSelection;
   TestRecordProcessing;
   TestRecordPatching;
+  TestMacros;
   
   // finalize jvt
   jvtPrintReport;
