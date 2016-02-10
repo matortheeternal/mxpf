@@ -495,8 +495,10 @@ LoadRecords('OTFT'); // loads all OTFT (outfit) records
       records that are children of Cell or Worldspace records (NAVM, ACHR, REFR, etc.).
   </p>
 <pre>SetExclusions(mxHardcodedDatFiles);
-LoadChildRecords('WRLD', 'NAVM'); // loads all NAVM (navmesh) records from the WRLD (worldspace) group
-LoadChildRecords('CELL', 'REFR'); // loads all REFR (object reference) records from the CELL (cell) group
+// load all NAVM (navmesh) records from the WRLD (worldspace) group
+LoadChildRecords('WRLD', 'NAVM');
+// load all REFR (object reference) records from the CELL (cell) group
+LoadChildRecords('CELL', 'REFR');
 </pre>
 
     <p id="GetRecord">
@@ -636,8 +638,11 @@ SetFileSelection(sFiles, true); // including the files
       <br />
       Accepts a comma-separated string of record signatures <tt>sRecords</tt>.  Can also accept signature pairs.  Calls <tt>LoadRecords</tt> for each record signature in <tt>sRecords</tt>, and calls <tt>LoadChildRecords</tt> for each record signature pair.
     </p>
-<pre>MultiLoad('ARMO,ARMA,WEAP'); // loads ARMO, ARMA, and WEAP records from the file selection
-MultiLoad('CELL:REFR,CELL:ACHR'); // loads REFR and ACHR children records from the CELL record group from the file selection
+<pre>// load ARMO, ARMA, and WEAP records from the file selection
+MultiLoad('ARMO,ARMA,WEAP');
+// load REFR and ACHR children records from CELL record groups in the
+// file selection
+MultiLoad('CELL:REFR,CELL:ACHR');
 </pre>
 
     <p id="QuickLoad">
@@ -645,7 +650,10 @@ MultiLoad('CELL:REFR,CELL:ACHR'); // loads REFR and ACHR children records from t
       <br />
       Calls <tt>InitializeMXPF</tt> and <tt>DefaultOptionsMXPF</tt>.  Then calls <tt>SetFileSelection</tt> with the input <tt>sFiles</tt> and <tt>bMode</tt>, and calls MultiLoad with the input <tt>sRecords</tt>.
     </p>
-<pre>QuickLoad(mxBethesdaSkyrimFiles, 'CELL:ACHR,WRLD:ACHR', false); // loads all ACHR records from the CELL and WRLD record groups in all loaded non-bethesda files.
+<pre>// load all ACHR records from the CELL and WRLD record groups in all loaded 
+// non-bethesda files.
+QuickLoad(mxBethesdaSkyrimFiles, 'CELL:ACHR,WRLD:ACHR', false);
+// loop through loaded records
 for i := 0 to MaxRecordIndex do begin
   rec := GetRecord(i);
   npc := LinksTo(ElementByPath(rec, 'NAME'));
@@ -658,17 +666,23 @@ end;
       <br />
       Calls <tt>InitializeMXPF</tt> and <tt>DefaultOptionsMXPF</tt>.  Then calls <tt>PatchFileByAuthor</tt> with the input <tt>sAuthor</tt>.  Then calls <tt>SetFileSelection</tt> with the input <tt>sFiles</tt> and <tt>bMode</tt>, and calls MultiLoad with the input <tt>sRecords</tt>.  Finally, calls <tt>CopyRecordsToPatch</tt>.
     </p>
-<pre>QuickPatch('Rebalance', 'Skyrim.esm', 'AMMO,ARMO,WEAP', true); // loads all AMMO, ARMO and WEAP records from Skyrim.esm, and copies them to a patch file with the author "Rebalance"
+<pre>// load all AMMO, ARMO and WEAP records from Skyrim.esm, and copy them to 
+// a patch file with the author "Rebalance"
+QuickPatch('Rebalance', 'Skyrim.esm', 'AMMO,ARMO,WEAP', true);
 // loop through records in patch
 for i := 0 to MaxPatchRecordIndex do begin
   rec := GetPatchRecord(i);
   sig := Signature(rec);
   // double the armor rating of all armors
-  if sig = 'ARMO' then
-    SetElementNativeValues(rec, 'DNAM', GetElementNativeValues(rec, 'DNAM') * 2.0)
+  if sig = 'ARMO' then begin
+    oldValue := GetElementNativeValues(rec, 'DNAM');
+    SetElementNativeValues(rec, 'DNAM', oldValue * 2.0)
+  end
   // double the damage of all weapons and ammo
-  else
-    SetElementNativeValues(rec, 'DATA\Damage', GetElementNativeValues(rec, 'DATA\Damage') * 2.0);
+  else begin
+    oldValue := GetElementNativeValues(rec, 'DATA\Damage');
+    SetElementNativeValues(rec, 'DATA\Damage', oldValue * 2.0);
+  end;
 end;
 FinalizeMXPF;
 </pre>
