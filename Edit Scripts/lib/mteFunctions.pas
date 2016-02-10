@@ -2181,11 +2181,15 @@ end;
   
   Example usage:
   files := TStringList.Create;
-  MultiFileSelect(files, 'Select some files');
-  AddMesage(files.Text); // The files the user selected
-  files.Free;
+  try
+    bCanceled := not MultiFileSelect(files, 'Select some files');
+    if bCanceled then exit;
+    AddMesage(files.Text); // The files the user selected
+  finally
+    files.Free;
+  end;
 }
-procedure MultiFileSelect(var sl: TStringList; prompt: string);
+function MultiFileSelect(var sl: TStringList; prompt: string): Boolean;
 const
   spacing = 24;
 var
@@ -2198,6 +2202,7 @@ var
   i: Integer;
   f: IInterface;
 begin
+  Result := false;
   frm := TForm.Create(nil);
   try
     frm.Position := poScreenCenter;
@@ -2244,6 +2249,7 @@ begin
     sl.Clear;
     
     if frm.ShowModal = mrOk then begin
+      Result := true;
       for i := 0 to FileCount - 2 do begin
         f := FileByLoadOrder(i);
         if (cbArray[i].Checked) and (sl.IndexOf(GetFileName(f)) = -1) then
