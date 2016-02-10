@@ -621,6 +621,16 @@ if bCanceled then exit;
 SetInclusions(sFiles);
 </pre>
 
+    <p id="SetFileSelection">
+      <b class="header">SetFileSelection</b> <code>procedure SetFileSelection(sFiles: String; bMode: Boolean);</code>
+      <br />
+      If <tt>bMode</tt> is true, calls SetInclusions on <tt>sFiles</tt>.  If <tt>bMode</tt> is false, calls SetExclusions on <tt>sFiles</tt>.
+    </p>
+<pre>sFiles := 'Skyrim.esm,Dawnguards.esm,Dragonborn.esm';
+SetFileSelection(sFiles, false); // excluding the files
+SetFileSelection(sFiles, true); // including the files
+</pre>
+
     <h2 id="links">Links</h2>
 
     <ul>
