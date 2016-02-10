@@ -814,7 +814,7 @@ begin
       end
       // else just LoadRecords
       else
-        LoadRecords(sRec);
+        LoadRecords(sig);
     end;
   finally
     sl.Free;
