@@ -631,6 +631,15 @@ SetFileSelection(sFiles, false); // excluding the files
 SetFileSelection(sFiles, true); // including the files
 </pre>
 
+    <p id="MultiLoad">
+      <b class="header">MultiLoad</b> <code>procedure MultiLoad(sRecords: String);</code>
+      <br />
+      Accepts a comma-separated string of record signatures <tt>sRecords</tt>.  Can also accept signature pairs.  Calls <tt>LoadRecords</tt> for each record signature in <tt>sRecords</tt>, and calls <tt>LoadChildRecords</tt> for each record signature pair.
+    </p>
+<pre>MultiLoad('ARMO,ARMA,WEAP'); // loads ARMO, ARMA, and WEAP records from the file selection
+MultiLoad('CELL:REFR,CELL:ACHR'); // loads REFR and ACHR children records from the CELL record group from the file selection
+</pre>
+
     <h2 id="links">Links</h2>
 
     <ul>
