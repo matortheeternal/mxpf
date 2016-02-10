@@ -640,6 +640,19 @@ SetFileSelection(sFiles, true); // including the files
 MultiLoad('CELL:REFR,CELL:ACHR'); // loads REFR and ACHR children records from the CELL record group from the file selection
 </pre>
 
+    <p id="QuickLoad">
+      <b class="header">QuickLoad</b> <code>procedure QuickLoad(sFiles, sRecords: String; bMode: Boolean);</code>
+      <br />
+      Calls <tt>InitializeMXPF</tt> and <tt>DefaultOptionsMXPF</tt>.  Then calls <tt>SetFileSelection</tt> with the input <tt>sFiles</tt> and <tt>bMode</tt>, and calls MultiLoad with the input <tt>sRecords</tt>.
+    </p>
+<pre>QuickLoad(mxBethesdaSkyrimFiles, 'CELL:ACHR,WRLD:ACHR', false); // loads all ACHR records from the CELL and WRLD record groups in all loaded non-bethesda files.
+for i := 0 to MaxRecordIndex do begin
+  rec := GetRecord(i);
+  npc := LinksTo(ElementByPath(rec, 'NAME'));
+  AddMessage('Found placed NPC '+Name(npc));
+end;
+</pre>
+
     <h2 id="links">Links</h2>
 
     <ul>
