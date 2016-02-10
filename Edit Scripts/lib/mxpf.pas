@@ -700,8 +700,6 @@ begin
   // if all checks pass, loop through records list
   for i := 0 to Pred(mxRecords.Count) do begin
     rec := ObjectToElement(mxRecords[i]);
-    if mxLoadWinningOverrides then 
-      rec := WinningOverrideBefore(rec, mxPatchFile);
     
     // winningOverrideBefore failed
     if not Assigned(rec) then begin
