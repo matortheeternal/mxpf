@@ -653,6 +653,26 @@ for i := 0 to MaxRecordIndex do begin
 end;
 </pre>
 
+    <p id="QuickPatch">
+      <b class="header">QuickPatch</b> <code>procedure QuickPatch(sAuthor, sFiles, sRecords: String; bMode: Boolean);</code>
+      <br />
+      Calls <tt>InitializeMXPF</tt> and <tt>DefaultOptionsMXPF</tt>.  Then calls <tt>PatchFileByAuthor</tt> with the input <tt>sAuthor</tt>.  Then calls <tt>SetFileSelection</tt> with the input <tt>sFiles</tt> and <tt>bMode</tt>, and calls MultiLoad with the input <tt>sRecords</tt>.  Finally, calls <tt>CopyRecordsToPatch</tt>.
+    </p>
+<pre>QuickPatch('Rebalance', 'Skyrim.esm', 'AMMO,ARMO,WEAP', true); // loads all AMMO, ARMO and WEAP records from Skyrim.esm, and copies them to a patch file with the author "Rebalance"
+// loop through records in patch
+for i := 0 to MaxPatchRecordIndex do begin
+  rec := GetPatchRecord(i);
+  sig := Signature(rec);
+  // double the armor rating of all armors
+  if sig = 'ARMO' then
+    SetElementNativeValues(rec, 'DNAM', GetElementNativeValues(rec, 'DNAM') * 2.0)
+  // double the damage of all weapons and ammo
+  else
+    SetElementNativeValues(rec, 'DATA\Damage', GetElementNativeValues(rec, 'DATA\Damage') * 2.0);
+end;
+FinalizeMXPF;
+</pre>
+
     <h2 id="links">Links</h2>
 
     <ul>
