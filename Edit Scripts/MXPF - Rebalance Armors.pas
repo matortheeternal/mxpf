@@ -1,5 +1,9 @@
 {
-  Test mxpf
+  MXPF - Rebalance Armors
+  by matortheeternal
+  
+  Sample MXPF Script, sets all heavy armor to have 25% higher 
+  armor rating.
 }
 
 unit UserScript;

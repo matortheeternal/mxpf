@@ -14,21 +14,22 @@ uses 'lib\mxpf';
 function Initialize: Integer;
 var
   i: integer;
-  sl, files: TStringList;
+  sFiles: String;
+  sl: TStringList;
   rec: IInterface;
 begin
-  // initialize stringlists
-  sl := TStringList.Create;
-  files := TStringList.Create;
-  
-  // get user file selection
-  MultiFileSelect(files, 'Select the files you want to load Female NPCs from');
+  // get file selection from user
+  if not MultiFileSelectString('Select the files you want to load Female NPCs from', sFiles) then
+    exit; // if user cancels, exit
   
   // use MXPF to load NPC_ records from the user's file selection
   InitializeMXPF;
   DefaultOptionsMXPF;
-  SetInclusions(files.CommaText);
+  SetInclusions(sFiles);
   LoadRecords('NPC_');
+  
+  // initialize stringlist which will hold a list of female NPCs we find
+  sl := TStringList.Create;
   
   // add names of female NPCs to the stringlist
   for i := 0 to MaxRecordIndex do begin
@@ -40,7 +41,6 @@ begin
   // clean up
   FinalizeMXPF;
   sl.SaveToFile('Female NPCs.txt');
-  files.Free;
   sl.Free;
 end;
 

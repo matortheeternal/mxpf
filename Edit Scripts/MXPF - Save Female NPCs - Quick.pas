@@ -18,13 +18,16 @@ var
   i: integer;
   rec: IInterface;
 begin
-  // initialize stringlists
-  sl := TStringList.Create;
+  // get file selection from user
+  if not MultiFileSelectString('Select the files you want to load Female NPCs from', sFiles) then 
+    exit; // if user cancels, exit
   
-  // set up MXPF and load records from files the user selected
-  sFiles := MultiFileSelectString('Select the files you want to load Female NPCs from');
+  // set up MXPF and load NPC_ records from files the user selected
   QuickLoad(sFiles, 'NPC_', true);
   
+  // initialize stringlist which will hold a list of female NPCs we find
+  sl := TStringList.Create;
+    
   // add names of female NPCs to the stringlist
   for i := 0 to MaxRecordIndex do begin
     rec := GetRecord(i);
