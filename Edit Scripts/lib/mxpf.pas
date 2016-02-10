@@ -769,14 +769,14 @@ end;
 // MACROS
 //=========================================================================
 
-function MultiFileSelectString(sPrompt: String): String;
+function MultiFileSelectString(sPrompt: String; var sFiles: String): Boolean;
 var
   sl: TStringList;
 begin
   sl := TStringList.Create;
   try
-    MultiFileSelect(sl, sPrompt);
-    Result := sl.CommaText;
+    Result := MultiFileSelect(sl, sPrompt);
+    sFiles := sl.CommaText;
   finally
     sl.Free;
   end;
