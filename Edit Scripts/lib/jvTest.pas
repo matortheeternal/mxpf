@@ -202,8 +202,7 @@ const
   varShortInt = 16;
   varString =  256; { Pascal string }
   varUString = 258; { Unicode string }
-  { SEE http://stackoverflow.com/questions/24731098/what-does-mean-vartypeavariant-273-or-111
-    for more }
+  { SEE http://stackoverflow.com/questions/24731098/ for more }
 var
   vt: Integer;
 begin
