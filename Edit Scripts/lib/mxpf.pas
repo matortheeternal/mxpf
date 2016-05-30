@@ -238,7 +238,7 @@ begin
   mxPatchFile := FileByName(filename);
   if not (Assigned(mxPatchFile) or mxDisallowNewFile) then begin
     ShowMessage('Enter "'+ChangeFileExt(filename, '')+'" for the patch filename in the next window.'); 
-    mxPatchFile := AddNewFile;
+    mxPatchFile := AddNewFileName(filename);
     madeNewFile := true;
   end;
   
