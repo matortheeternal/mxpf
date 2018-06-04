@@ -2034,7 +2034,7 @@ begin
   // AddMasterIfMissing will attempt to add the masters to the file.
   if not silent then AddMessage('    Adding masters to '+GetFileName(f)+'...');
   for i := 0 to lst.Count - 1 do begin
-    if (Lowercase(lst[i]) <> Lowercase(GetFileName(f))) then
+    if (Lowercase(lst[i]) <> Lowercase(GetFileName(f))) and (not StrEndsWith(Lowercase(lst[i]), '.dat')) then
       AddMasterIfMissing(f, lst[i]);
   end;
   
@@ -2053,7 +2053,7 @@ begin
     slCurrentMasters.Add(s);
   end;
   for i := 0 to lst.Count - 1 do begin
-    if (Lowercase(lst[i]) <> Lowercase(GetFileName(f))) and (slCurrentMasters.IndexOf(lst[i]) = -1) then begin
+    if (Lowercase(lst[i]) <> Lowercase(GetFileName(f))) and (slCurrentMasters.IndexOf(lst[i]) = -1) and (not StrEndsWith(Lowercase(lst[i]), '.dat')) then begin
       master := ElementAssign(masters, HighInteger, nil, False);
       SetElementEditValues(master, 'MAST', lst[i]);
       AddMessage('      +Re-added master: '+lst[i]);
