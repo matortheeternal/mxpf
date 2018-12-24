@@ -32,7 +32,7 @@ const
   // comma separated list of bethesda skyrim files
   mxBethesdaSkyrimFiles = 'Skyrim.esm'#44'Update.esm'#44'Dawnguard.esm'#44'HearthFires.esm'#44
   'Dragonborn.esm'#44
-  'Skyrim.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat',
+  'Skyrim.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat'#64
   'Skyrim.exe';
   
   // comma separated list of hardcoded dat files
