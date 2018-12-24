@@ -32,14 +32,17 @@ const
   // comma separated list of bethesda skyrim files
   mxBethesdaSkyrimFiles = 'Skyrim.esm'#44'Update.esm'#44'Dawnguard.esm'#44'HearthFires.esm'#44
   'Dragonborn.esm'#44
-  'Skyrim.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat';
+  'Skyrim.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat',
+  'Skyrim.exe';
   
   // comma separated list of hardcoded dat files
   mxHardcodedDatFiles = 
   'Skyrim.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat'#44
   'Fallout3.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat'#44
   'Oblivion.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat'#44
-  'FalloutNV.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat';
+  'FalloutNV.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat'#64
+  'Fallout4.Hardcoded.keep.this.with.the.exe.and.otherwise.ignore.it.I.really.mean.it.dat'#64
+  'Skyrim.exe'#64'Fallout3.exe'#64'Oblivion.exe'#64'FalloutNV.exe'#64'Fallout4.exe';
 
 var
   mxFiles, mxMasters, mxDebugMessages, mxFailureMessages: TStringList;
