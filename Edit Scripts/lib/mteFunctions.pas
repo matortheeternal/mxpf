@@ -47,6 +47,8 @@
     including the entries at those indices.
   - [GetTextIn]: Gets a substring from a string between two characters.
   - [RecordByHexFormID]: Gets a record by a hexadecimal FormID string.
+  - [FileByLocalIndex]: Gets a file by a hexadecimal local xEdit index.
+  - [LightPluginSupportEnabled]: Gets if current xEdit game supports ESL-flagged plugins.
   - [GetAuthor]: Gets the author of a file.
   - [SetAuthor]: Sets the author of a file.
   - [FileByName]: gets a file from a filename.
@@ -993,10 +995,54 @@ end;
 }
 function RecordByHexFormID(id: string): IInterface;
 var
+  ps: string;
   f: IInterface;
 begin
-  f := FileByLoadOrder(StrToInt('$' + Copy(id, 1, 2)));
+  ps := Copy(id, 1, 2);
+  if (LightPluginSupportEnabled) then begin
+    if (ps = 'FE') then f := FileByLocalIndex(Copy(id, 1, 5)) else f := FileByLocalIndex(ps);
+  end else f := FileByLoadOrder(StrToInt('$' + ps));
   Result := RecordByFormID(f, StrToInt('$' + id), true);
+end;
+
+{
+  FileByLocalIndex:
+  Gets a file by a hexadecimal local xEdit index.
+  
+  Example usage:
+  f := FileByLocalIndex('FE001');
+  AddMessage(Name(f));
+}
+function FileByLocalIndex(str: string): IInterface;
+var
+  done: boolean;
+  fi: integer;
+  f: IInterface;
+begin
+  done := false;
+  for fi := 0 to FileCount - 1 do begin
+	f := FileByIndex(fi);
+	if (StringReplace(GetTextIn(Name(f), '[', ']'), ' ', '', [rfReplaceAll]) = str) then begin
+	  done := true;
+	  break;
+	end;
+  end;
+  if (done) then Result := f;
+end;
+
+{
+  LightPluginSupportEnabled:
+  Gets if current xEdit game supports ESL-flagged plugins.
+  
+  Example usage:
+  check := LightPluginSupportEnabled;
+  if (not check) then exit;
+}
+function LightPluginSupportEnabled: boolean;
+begin
+  if (wbVersionNumber < 50462976) // 3.2.1
+  then Result := false
+  else Result := (wbAppName = 'SSE') or (wbAppName = 'FO4');
 end;
 
 {
