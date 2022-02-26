@@ -1021,11 +1021,11 @@ var
 begin
   done := false;
   for fi := 0 to FileCount - 1 do begin
-	f := FileByIndex(fi);
-	if (StringReplace(GetTextIn(Name(f), '[', ']'), ' ', '', [rfReplaceAll]) = str) then begin
-	  done := true;
-	  break;
-	end;
+    f := FileByIndex(fi);
+    if (StringReplace(GetTextIn(Name(f), '[', ']'), ' ', '', [rfReplaceAll]) = str) then begin
+      done := true;
+      break;
+    end;
   end;
   if (done) then Result := f;
 end;
