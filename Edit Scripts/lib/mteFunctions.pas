@@ -1,6 +1,6 @@
 {
   matortheeternal's Functions
-  edited 11/12/2015
+  edited 14/05/2023
   
   A set of useful functions for use in TES5Edit scripts.
   
@@ -2242,7 +2242,7 @@ var
   frm: TForm;
   pnl: TPanel;
   lastTop, contentHeight: Integer;
-  cbArray: Array[0..255] of TCheckBox;
+  cbArray: Array[0..9999] of TCheckBox;
   lbl: TLabel;
   sb: TScrollBox;
   i: Integer;
