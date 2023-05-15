@@ -1,6 +1,6 @@
 {
   matortheeternal's Functions
-  edited 14/05/2023
+  edited 15/05/2023
   
   A set of useful functions for use in TES5Edit scripts.
   
@@ -2332,8 +2332,8 @@ begin
         f := FileByLoadOrder(i);
         p := Trunc(i / 500);
         e := i - p * 500;
-        if (cbArray[p,e].Checked) and (sl.IndexOf(GetFileName(f)) = -1) then
-          sl.Add(GetFileName(f));
+        if (cbArray[p,e].Checked) and (sl.IndexOf(GetFileName(f)) = -1)
+        then sl.Add(GetFileName(f));
       end;
     end;
     
