@@ -2230,7 +2230,7 @@ end;
   try
     bCanceled := not MultiFileSelect(files, 'Select some files');
     if bCanceled then exit;
-    AddMesage(files.Text); // The files the user selected
+    AddMessage(files.Text); // The files the user selected
   finally
     files.Free;
   end;
@@ -2240,14 +2240,19 @@ const
   spacing = 24;
 var
   frm: TForm;
-  pnl: TPanel;
   lastTop, contentHeight: Integer;
-  cbArray: Array[0..9999] of TCheckBox;
+  cbArray: Array[0..19, 0..499] of TCheckBox;
+  sbArray: Array[0..19] of TScrollBox;
   lbl: TLabel;
-  sb: TScrollBox;
-  i: Integer;
+  btnPrev, btnNext: TButton;
+  i, mi, p, mp, e, me, wid, modal: Integer;
   f: IInterface;
 begin
+  // calculate bounds
+  mi := FileCount - 2;
+  mp := Trunc(mi / 500);
+  wid := Trunc(ln(mi) / ln(16)) + 1;
+  
   Result := false;
   frm := TForm.Create(nil);
   try
@@ -2257,51 +2262,81 @@ begin
     frm.BorderStyle := bsDialog;
     frm.Caption := 'Multiple file selection';
     
-    // create scrollbox
-    sb := TScrollBox.Create(frm);
-    sb.Parent := frm;
-    sb.Align := alTop;
-    sb.Height := 500;
-    
-    // create label
-    lbl := TLabel.Create(sb);
-    lbl.Parent := sb;
-    lbl.Caption := prompt;
-    lbl.Left := 8;
-    lbl.Top := 8;
-    lbl.Width := 280;
-    lbl.WordWrap := true;
-    lastTop := lbl.Top + lbl.Height + 8 - spacing;
-    
-    // create checkboxes
-    for i := 0 to FileCount - 2 do begin
-      f := FileByLoadOrder(i);
-      cbArray[i] := TCheckBox.Create(sb);
-      cbArray[i].Parent := sb;
-      cbArray[i].Caption := Format(' [%s] %s', [IntToHex(i, 2), GetFileName(f)]);
-      cbArray[i].Top := lastTop + spacing;
-      cbArray[i].Width := 260;
-      lastTop := lastTop + spacing;
-      cbArray[i].Left := 12;
-      cbArray[i].Checked := sl.IndexOf(GetFileName(f)) > -1;
+    // create scrollboxes
+    for p := 0 to mp do begin
+      sbArray[p] := TScrollBox.Create(frm);
+      sbArray[p].Parent := frm;
+      sbArray[p].Align := alTop;
+      sbArray[p].Height := 0;
+      
+      if (p < mp) then me := 499 else me := mi - p * 500;
+      // create checkboxes
+      for e := 0 to me do begin
+        i := p * 500 + e;
+        f := FileByLoadOrder(i);
+        cbArray[p,e] := TCheckBox.Create(sbArray[p]);
+        cbArray[p,e].Parent := sbArray[p];
+        cbArray[p,e].Caption := Format(' [%s] %s', [IntToHex(i, wid), GetFileName(f)]);
+        cbArray[p,e].Top := lastTop + spacing;
+        cbArray[p,e].Width := 260;
+        lastTop := lastTop + spacing;
+        cbArray[p,e].Left := 12;
+        cbArray[p,e].Checked := sl.IndexOf(GetFileName(f)) > -1;
+      end;
+      
+      // create label
+      lbl := TLabel.Create(sbArray[p]);
+      lbl.Parent := sbArray[p];
+      lbl.Caption := Format('%s [%s/%s]', [prompt, IntToStr(p + 1), IntToStr(mp + 1)]);
+      lbl.Left := 8;
+      lbl.Top := 8;
+      lbl.Width := 280;
+      lbl.WordWrap := true;
+      lastTop := lbl.Top + lbl.Height + 8 - spacing;
     end;
     
-    contentHeight := spacing*(i + 2) + 100;
-    if frm.Height > contentHeight then
-      frm.Height := contentHeight;
+    if mp = 0 then begin
+      contentHeight := spacing * FileCount + 100;
+      if frm.Height > contentHeight then frm.Height := contentHeight;
+    end;
     
     // create modal buttons
+    btnPrev := ConstructButton(frm, frm, frm.Height - 97, frm.Width / 2 - 83, 25, 75, '<< Page');
+    btnPrev.ModalResult := 70;
+    btnNext := ConstructButton(frm, frm, frm.Height - 97, frm.Width / 2 + 8, 25, 75, 'Page >>');
+    btnNext.ModalResult := 80;
     cModal(frm, frm, frm.Height - 70);
     sl.Clear;
     
-    if frm.ShowModal = mrOk then begin
+    // show first page
+    p := 0;
+    sbArray[p].Height := 500;
+    modal := frm.ShowModal;
+    
+    while true do begin
+      if (modal = mrOk) or (modal = mrCancel) then break;
+      if modal = btnPrev.ModalResult then p := p - 1;
+      if modal = btnNext.ModalResult then p := p + 1;
+      if p < 0 then p := 0 else if p > mp then p := mp;
+      for i := 0 to mp do begin
+        if i = p
+        then sbArray[i].Height := 500
+        else sbArray[i].Height := 0;
+      end;
+      modal := frm.ShowModal;
+    end;
+    
+    if modal = mrOk then begin
       Result := true;
-      for i := 0 to FileCount - 2 do begin
+      for i := 0 to mi do begin
         f := FileByLoadOrder(i);
-        if (cbArray[i].Checked) and (sl.IndexOf(GetFileName(f)) = -1) then
+        p := Trunc(i / 500);
+        e := i - p * 500;
+        if (cbArray[p,e].Checked) and (sl.IndexOf(GetFileName(f)) = -1) then
           sl.Add(GetFileName(f));
       end;
     end;
+    
   finally
     frm.Free;
   end;
